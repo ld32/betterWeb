@@ -126,4 +126,13 @@
     </div>
     </div><!-- #form_activity -->
   </div><!-- .form -->
+  <script>
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('attached-image-toggle')) {
+        e.preventDefault();
+        var img = e.target.nextElementSibling;
+        img.style.display = img.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  </script>
 </html>
