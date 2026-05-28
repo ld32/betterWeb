@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Incident List - Mock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #fff; border-bottom: 1px solid #e4e7ee; padding: 10px 16px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { border-bottom: 1px solid #eef1f6; padding: 8px 10px; text-align: left; }
+    th { background: #f7f9fc; font-weight: 600; }
+    tr:hover { background: #fbfdff; }
+    .vt { vertical-align: top; }
+    .linked { color: #1a73e8; text-decoration: none; }
+    .linked:hover { text-decoration: underline; }
+    /* marker class used by extension */
+    .formlink { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Incidents</strong>
+  </header>
+
+  <table role="grid" aria-label="incident list">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th></th>
+        <th>Number</th>
+        <th>Short description</th>
+        <th>Updated by</th>
+        <th>Assignment group</th>
+        <th>Caller</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Row 1 -->
+      <tr>
+        <td class="vt">1</td>
+        <td class="vt"></td>
+        <td class="vt">
+          <a class="linked formlink" href="incident.do.html?sys_id=INC0000001" aria-label="Open record: INC0000001">INC0000001</a>
+        </td>
+        <td class="vt">Login error on portal</td>
+        <td class="vt"><a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">David Dong</a></td>
+        <td class="vt">Service Desk</td>
+        <td class="vt"><a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">David Miller</a></td>
+        <td class="vt">
+          <div class="datex date-calendar-short" title="10-26 09:12" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago">10-26 09:12</div>
+          <div class="datex date-timeago" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" data-original-title="10-26-2025 09:12:00" null="3d ago">3d ago</div>
+        </td>
+      </tr>
+
+      <!-- Row 2 -->
+      <tr>
+        <td class="vt">2</td>
+        <td class="vt"></td>
+        <td class="vt">
+          <a class="linked formlink" href="incident.do.html?sys_id=INC0000002" aria-label="Open record: INC0000002">INC0000002</a>
+        </td>
+        <td class="vt">Email not syncing</td>
+        <td class="vt"><a class="linked" sys_id="def456" href="sys_user.do.html?sys_id=def456">Jane Smith</a></td>
+        <td class="vt">Messaging</td>
+        <td class="vt"><a class="linked" sys_id="31fdc176731313005754660c4cf6b222" href="sys_user.do.html?sys_id=31fdc176731313005754660c4cf6b222">Alice Johnson</a></td>
+        <td class="vt">
+          <div class="datex date-calendar-short" title="10-26 10:02" timeago="2025-10-26 10:02:00" timeago-attrs="title" data-original-title="3d ago">10-26 10:02</div>
+          <div class="datex date-timeago" title="10-26-2025 10:02:00" timeago="2025-10-26 10:02:00" data-original-title="10-26-2025 10:02:00" null="3d ago">3d ago</div>
+        </td>
+      </tr>
+
+      <!-- Row 3 -->
+      <tr>
+        <td class="vt">3</td>
+        <td class="vt"></td>
+        <td class="vt">
+          <a class="linked formlink" href="incident.do.html?sys_id=INC0000003" aria-label="Open record: INC0000003">INC0000003</a>
+        </td>
+        <td class="vt">Cannot access VPN</td>
+        <td class="vt"><a class="linked" sys_id="ghi789" href="sys_user.do.html?sys_id=ghi789">Mike Johnson</a></td>
+        <td class="vt">Network</td>
+        <td class="vt"><a class="linked" sys_id="a1b28176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=a1b28176731313005754660c4cf6a7de">Bob Smith</a></td>
+        <td class="vt">
+          <div class="datex date-calendar-short" title="10-26 08:45" timeago="2025-10-26 08:45:00" timeago-attrs="title" data-original-title="3d ago">10-26 08:45</div>
+          <div class="datex date-timeago" title="10-26-2025 08:45:00" timeago="2025-10-26 08:45:00" data-original-title="10-26-2025 08:45:00" null="3d ago">3d ago</div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Incident - Mock Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --border: #e4e7ee; }
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: 10px 16px; }
+    .form { max-width: 980px; margin: 12px auto; padding: 0 16px; }
+    .row { display: grid; grid-template-columns: 220px 1fr; gap: 8px 16px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+    label { color: #444; font-size: 13px; }
+    input[type="text"], select, textarea { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; width: 100%; }
+    textarea { min-height: 120px; }
+    .actions { padding: 12px 0; }
+    .actions button { background: #1a73e8; color: #fff; border: 0; padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+    .actions button:hover { background: #1559b2; }
+    .linked { color: #1a73e8; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Incident</strong>
+  </header>
+
+  <div class="form">
+    <div class="row">
+      <label for="number">Number</label>
+      <input id="number" type="text" value="INC0000001">
+    </div>
+
+    <div class="row">
+      <label for="short_description">Short description</label>
+      <input id="short_description" type="text" value="Login error on portal">
+    </div>
+
+    <div class="row">
+      <label for="assignment_group">Assignment group</label>
+      <input id="assignment_group" type="text" value="Service Desk">
+    </div>
+
+    <div class="row">
+      <label for="caller">Caller</label>
+      <div>
+        <!-- mimic reference link style -->
+        <a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">David Miller</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="updated_time">Updated time</label>
+      <div id="updated_time">
+        <div class="datex date-calendar" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago">10-26-2025 09:12:00</div>
+        <div class="datex date-calendar-short" title="10-26 09:12" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago">10-26 09:12</div>
+        <div class="datex date-timeago" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" data-original-title="10-26-2025 09:12:00" null="3d ago">3d ago</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="comments">Comments / Work notes</label>
+      <textarea id="comments" placeholder="Type comments here..."></textarea>
+    </div>
+
+    <div class="actions">
+      <button id="btn_save">Save</button>
+      <button id="btn_update">Update</button>
+    </div>
+  </div>
+</body>
+</html>

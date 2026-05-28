@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Better Web Test - ServiceNow Mock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #1a73e8; color: #fff; padding: 10px 16px; font-weight: 600; }
+    .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    nav { background: #f5f7fb; border-right: 1px solid #e4e7ee; padding: 12px; }
+    nav h3 { font-size: 14px; margin: 8px 0; color: #333; }
+    nav a { display: block; color: #1a73e8; text-decoration: none; padding: 6px 4px; border-radius: 4px; font-size: 14px; }
+    nav a:hover { background: #eaf1fe; }
+    main { position: relative; padding: 16px; }
+    #gsft_main { width: 100%; height: calc(100vh - 48px); border: 0; }
+    .hint { font-size: 12px; color: #666; margin-top: 8px; }
+    
+    /* Table styles for wider fields */
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { border-bottom: 1px solid #eef1f6; padding: 12px 16px; text-align: left; }
+    th { background: #f7f9fc; font-weight: 600; white-space: nowrap; }
+    td { min-width: 100px; }
+    tr:hover { background: #fbfdff; }
+    .vt { vertical-align: top; }
+    .linked { color: #1a73e8; text-decoration: none; }
+    .linked:hover { text-decoration: underline; }
+    .formlink { text-decoration: none; }
+    
+    /* Specific column widths for better spacing */
+    /* Tighten gap between first (#) and second (blank) column */
+    th:nth-child(1), td:nth-child(1) { width: 6px; text-align: center; padding-right: 0px; } /* # */
+    th:nth-child(2), td:nth-child(2) { width: 8px; padding-left: 0; padding-right: 0; } /* empty */
+    th:nth-child(3), td:nth-child(3) { width: 120px; } /* Number */
+    th:nth-child(4), td:nth-child(4) { width: 250px; } /* Short description */
+    th:nth-child(5), td:nth-child(5) { width: 150px; } /* Updated by */
+    th:nth-child(6), td:nth-child(6) { width: 150px; } /* Assignment group */
+    th:nth-child(7), td:nth-child(7) { width: 150px; } /* Caller */
+    th:nth-child(8), td:nth-child(8) { width: 120px; } /* Updated */
+  </style>
+</head>
+<body>
+  <header>ServiceNow Mock — Better Web Testing Shell</header>
+  <div class="app">
+    <nav>
+      <h3>Navigation</h3>
+        <a href="?view=new">New Tickets</a>
+        <a href="?view=my">My Tickets</a>
+
+      <div class="hint">Links load into the main iframe like ServiceNow.</div>
+    </nav>
+    <main>
+      <!-- Content area: will be replaced by an iframe when running on file:// -->
+        <div id="main_content" aria-live="polite"></div>
+    </main>
+  </div>
+  <script>
+    (function () {
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewType = urlParams.get('view') || 'my'; // default to 'my' tickets
+
+        // Data for different views
+        const ticketData = {
+          new: [
+            { num: 'INC0000004', desc: 'Password reset request', updatedBy: 'System Admin', group: '', caller: 'Emma Wilson', time: '10-27 11:30', timeago: '1h ago' },
+            { num: 'INC0000005', desc: 'Software installation needed', updatedBy: 'Help Desk', group: '', caller: 'James Brown', time: '10-27 10:15', timeago: '2h ago' },
+            { num: 'INC0000006', desc: 'Network printer offline', updatedBy: 'IT Support', group: '', caller: 'Sarah Davis', time: '10-27 09:45', timeago: '3h ago' },
+          ],
+          my: [
+            { num: 'INC0000001', desc: 'Login error on portal', updatedBy: 'David Dong', group: 'Service Desk', caller: 'David Miller', time: '10-26 09:12', timeago: '3d ago' },
+            { num: 'INC0000002', desc: 'Email not syncing', updatedBy: 'Jane Smith', group: 'Messaging', caller: 'Alice Johnson', time: '10-26 10:02', timeago: '3d ago' },
+            { num: 'INC0000003', desc: 'Cannot access VPN', updatedBy: 'Mike Johnson', group: 'Network', caller: 'Bob Smith', time: '10-26 08:45', timeago: '3d ago' },
+          ]
+        };
+
+        function generateTable(data) {
+          const rows = data.map((ticket, idx) => `
+            <tr>
+              <td class="vt">${idx + 1}</td>
+              <td class="vt"></td>
+              <td class="vt">
+                <a class="linked formlink" href="incident.do.html?sys_id=${ticket.num}"
+                   aria-label="Open record: ${ticket.num}">${ticket.num}</a>
+              </td>
+              <td class="vt">${ticket.desc}</td>
+              <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${ticket.updatedBy}</a></td>
+              <td class="vt">${ticket.group}</td>
+              <td class="vt"><a class="linked" sys_id="caller${idx}" href="sys_user.do.html?sys_id=caller${idx}">${ticket.caller}</a></td>
+              <td class="vt">
+                <div class="datex date-calendar-short" title="${ticket.time}" timeago="2025-${ticket.time}:00"
+                     timeago-attrs="title" data-original-title="${ticket.timeago}">${ticket.time}</div>
+                <div class="datex date-timeago" title="2025-${ticket.time}:00" timeago="2025-${ticket.time}:00"
+                     data-original-title="2025-${ticket.time}:00" null="${ticket.timeago}">${ticket.timeago}</div>
+              </td>
+            </tr>
+          `).join('');
+
+          return `
+            <table role="grid" aria-label="incident list">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th></th>
+                  <th>Number</th>
+                  <th>Short description</th>
+                  <th>Updated by</th>
+                  <th>Assignment group</th>
+                  <th>Caller</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          `;
+        }
+
+      // Loader supports two modes:
+      // 1) HTTP/HTTPS: fetch and inject into #main_content (SPA)
+      // 2) file://    : use an iframe (#gsft_main) to avoid fetch() restrictions
+      const main = document.getElementById('main_content');
+    // Exception: when a view parameter is present, render directly even on file://
+    const hasViewParam = urlParams.has('view');
+    const useIframe = (location.protocol === 'file:' && !hasViewParam);
+      let iframeEl = null;
+
+      if (useIframe) {
+        // Create and insert iframe for file:// mode
+        iframeEl = document.createElement('iframe');
+        iframeEl.id = 'gsft_main';
+        iframeEl.setAttribute('title', 'ServiceNow Main Frame');
+        iframeEl.setAttribute('aria-label', 'ServiceNow Main Frame');
+        iframeEl.style.width = '100%';
+        iframeEl.style.height = 'calc(100vh - 48px)';
+        iframeEl.style.border = '0';
+        // Replace the placeholder div with the iframe
+        main.replaceWith(iframeEl);
+      }
+
+      async function loadIntoMain(url) {
+        if (useIframe) {
+          // In file:// mode, navigate iframe instead of fetching
+          console.log('[BetterWeb Test] navigating iframe ->', url);
+          if (iframeEl) iframeEl.src = url;
+          return;
+        }
+
+        // HTTP/HTTPS mode: fetch and inject
+        try {
+          console.log('[BetterWeb Test] loading content ->', url);
+          const res = await fetch(url, { cache: 'no-cache' });
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+          const html = await res.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const content = doc.body ? doc.body.innerHTML : html;
+          main.innerHTML = content;
+          console.log('[BetterWeb Test] content loaded:', url);
+        } catch (e) {
+          console.error('[BetterWeb Test] failed to load content:', url, e);
+          if (main) main.innerHTML = `<pre style="color:#b00020;">Failed to load ${url}: ${e}</pre>`;
+        }
+      }
+
+      function setupNav() {
+        document.querySelectorAll('nav a[href]').forEach(a => {
+          a.addEventListener('click', (ev) => {
+            const href = a.getAttribute('href');
+            if (!href) return;
+            // Only intercept view parameter links
+            if (href.startsWith('?view=')) {
+              ev.preventDefault();
+              window.location.search = href;
+            } else if (!href.includes('.html')) {
+              ev.preventDefault();
+              loadIntoMain(href);
+            } else {
+              ev.preventDefault();
+              loadIntoMain(href);
+            }
+          });
+        });
+      }
+
+      function boot() {
+        // Render the appropriate table based on view parameter
+          // Render the appropriate table based on view parameter (or load iframe content)
+          if (!useIframe) {
+            const mainContent = document.getElementById('main_content');
+            if (mainContent) {
+              const data = ticketData[viewType] || ticketData.my;
+              mainContent.innerHTML = generateTable(data);
+              console.log(`[BetterWeb Test] Rendered ${viewType} tickets view`);
+            }
+          } else {
+            // file:// mode without view param -> show external list in iframe
+            loadIntoMain('incident_list.do.html');
+          }
+
+          setupNav();
+
+        setupNav();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>
