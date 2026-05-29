@@ -63,14 +63,14 @@
         // Data for different views
         const ticketData = {
           new: [
-            { num: 'INC0000004', desc: 'Password reset request', updatedBy: 'System Admin', group: '', caller: 'Emma Wilson', time: '10-27 11:30', timeago: '1h ago' },
-            { num: 'INC0000005', desc: 'Software installation needed', updatedBy: 'Help Desk', group: '', caller: 'James Brown', time: '10-27 10:15', timeago: '2h ago' },
-            { num: 'INC0000006', desc: 'Network printer offline', updatedBy: 'IT Support', group: '', caller: 'Sarah Davis', time: '10-27 09:45', timeago: '3h ago' },
+            { num: 'INC0000004', desc: 'Password reset request', updatedBy: 'System Admin', group: '', caller: 'Emma Wilson', time: '10-27 11:30', timeago: '1h ago', state: 'New' },
+            { num: 'INC0000005', desc: 'Software installation needed', updatedBy: 'Help Desk', group: '', caller: 'James Brown', time: '10-27 10:15', timeago: '2h ago', state: 'New' },
+            { num: 'INC0000006', desc: 'Network printer offline', updatedBy: 'IT Support', group: '', caller: 'Sarah Davis', time: '10-27 09:45', timeago: '3h ago', state: 'New' },
           ],
           my: [
-            { num: 'INC0000001', desc: 'Login error on portal', updatedBy: 'David Dong', group: 'Service Desk', caller: 'David Miller', time: '10-26 09:12', timeago: '3d ago' },
-            { num: 'INC0000002', desc: 'Email not syncing', updatedBy: 'Jane Smith', group: 'Messaging', caller: 'Alice Johnson', time: '10-26 10:02', timeago: '3d ago' },
-            { num: 'INC0000003', desc: 'Cannot access VPN', updatedBy: 'Mike Johnson', group: 'Network', caller: 'Bob Smith', time: '10-26 08:45', timeago: '3d ago' },
+            { num: 'INC0000001', desc: 'Login error on portal', updatedBy: 'David Dong', group: 'Service Desk', caller: 'David Miller', time: '10-26 09:12', timeago: '3d ago', state: 'In Progress' },
+            { num: 'INC0000002', desc: 'Email not syncing', updatedBy: 'Jane Smith', group: 'Messaging', caller: 'Alice Johnson', time: '10-26 10:02', timeago: '3d ago', state: 'On Hold' },
+            { num: 'INC0000003', desc: 'Cannot access VPN', updatedBy: 'Mike Johnson', group: 'Network', caller: 'Bob Smith', time: '10-26 08:45', timeago: '3d ago', state: 'Resolved' },
           ]
         };
 
@@ -84,6 +84,7 @@
                    aria-label="Open record: ${ticket.num}">${ticket.num}</a>
               </td>
               <td class="vt">${ticket.desc}</td>
+              <td class="vt">${ticket.state}</td>
               <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${ticket.updatedBy}</a></td>
               <td class="vt">${ticket.group}</td>
               <td class="vt"><a class="linked" sys_id="caller${idx}" href="sys_user.do.html?sys_id=caller${idx}">${ticket.caller}</a></td>
@@ -104,6 +105,7 @@
                   <th></th>
                   <th>Number</th>
                   <th>Short description</th>
+                  <th>State</th>
                   <th>Updated by</th>
                   <th>Assignment group</th>
                   <th>Caller</th>
