@@ -58,7 +58,7 @@
     (function () {
         // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const viewType = urlParams.get('view') || 'my'; // default to 'my' tickets
+        const viewType = urlParams.get('view') || 'new'; // default to 'new' tickets
 
         // Data for different views
         const ticketData = {
@@ -94,8 +94,20 @@
           ]
         };
 
+        // Format "2026-05-30 14:23:45" -> "05-30 14:23" to match list column style
+        function fmtStoredTime(t) {
+          var m = t.match(/^\d{4}-(\d{2}-\d{2}) (\d{2}:\d{2})/);
+          return m ? m[1] + ' ' + m[2] : t;
+        }
+
         function generateTable(data) {
-          const rows = data.map((ticket, idx) => `
+          const rows = data.map((ticket, idx) => {
+            // Pull any locally-saved "last update" for this ticket
+            const stored = JSON.parse(localStorage.getItem('betterWeb_lastUpdate_' + ticket.num) || 'null');
+            const updatedBy = stored ? stored.by : ticket.updatedBy;
+            const dispTime  = stored ? fmtStoredTime(stored.time) : ticket.time;
+            const timeago   = stored ? 'just now' : ticket.timeago;
+            return `
             <tr>
               <td class="vt">${idx + 1}</td>
               <td class="vt"></td>
@@ -105,17 +117,18 @@
               </td>
               <td class="vt">${ticket.desc}</td>
               <td class="vt">${ticket.state}</td>
-              <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${ticket.updatedBy}</a></td>
+              <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${updatedBy}</a></td>
               <td class="vt">${ticket.group}</td>
               <td class="vt"><a class="linked" sys_id="caller${idx}" href="sys_user.do.html?sys_id=caller${idx}">${ticket.caller}</a></td>
               <td class="vt">
-                <div class="datex date-calendar-short" title="${ticket.time}" timeago="2025-${ticket.time}:00"
-                     timeago-attrs="title" data-original-title="${ticket.timeago}">${ticket.time}</div>
-                <div class="datex date-timeago" title="2025-${ticket.time}:00" timeago="2025-${ticket.time}:00"
-                     data-original-title="2025-${ticket.time}:00" null="${ticket.timeago}">${ticket.timeago}</div>
+                <div class="datex date-calendar-short" title="${dispTime}" timeago="${dispTime}"
+                     timeago-attrs="title" data-original-title="${timeago}">${dispTime}</div>
+                <div class="datex date-timeago" title="${dispTime}" timeago="${dispTime}"
+                     data-original-title="${dispTime}" null="${timeago}">${timeago}</div>
               </td>
             </tr>
-          `).join('');
+          `;
+          }).join('');
 
           return `
             <table role="grid" aria-label="incident list">
@@ -139,90 +152,24 @@
           `;
         }
 
-      // Loader supports two modes:
-      // 1) HTTP/HTTPS: fetch and inject into #main_content (SPA)
-      // 2) file://    : use an iframe (#gsft_main) to avoid fetch() restrictions
-      const main = document.getElementById('main_content');
-    // Exception: when a view parameter is present, render directly even on file://
-    const hasViewParam = urlParams.has('view');
-    const useIframe = (location.protocol === 'file:' && !hasViewParam);
-      let iframeEl = null;
-
-      if (useIframe) {
-        // Create and insert iframe for file:// mode
-        iframeEl = document.createElement('iframe');
-        iframeEl.id = 'gsft_main';
-        iframeEl.setAttribute('title', 'ServiceNow Main Frame');
-        iframeEl.setAttribute('aria-label', 'ServiceNow Main Frame');
-        iframeEl.style.width = '100%';
-        iframeEl.style.height = 'calc(100vh - 48px)';
-        iframeEl.style.border = '0';
-        // Replace the placeholder div with the iframe
-        main.replaceWith(iframeEl);
-      }
-
-      async function loadIntoMain(url) {
-        if (useIframe) {
-          // In file:// mode, navigate iframe instead of fetching
-          console.log('[BetterWeb Test] navigating iframe ->', url);
-          if (iframeEl) iframeEl.src = url;
-          return;
-        }
-
-        // HTTP/HTTPS mode: fetch and inject
-        try {
-          console.log('[BetterWeb Test] loading content ->', url);
-          const res = await fetch(url, { cache: 'no-cache' });
-          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-          const html = await res.text();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const content = doc.body ? doc.body.innerHTML : html;
-          main.innerHTML = content;
-          console.log('[BetterWeb Test] content loaded:', url);
-        } catch (e) {
-          console.error('[BetterWeb Test] failed to load content:', url, e);
-          if (main) main.innerHTML = `<pre style="color:#b00020;">Failed to load ${url}: ${e}</pre>`;
-        }
-      }
-
       function setupNav() {
         document.querySelectorAll('nav a[href]').forEach(a => {
           a.addEventListener('click', (ev) => {
             const href = a.getAttribute('href');
-            if (!href) return;
-            // Only intercept view parameter links
-            if (href.startsWith('?view=')) {
+            if (href && href.startsWith('?view=')) {
               ev.preventDefault();
               window.location.search = href;
-            } else if (!href.includes('.html')) {
-              ev.preventDefault();
-              loadIntoMain(href);
-            } else {
-              ev.preventDefault();
-              loadIntoMain(href);
             }
           });
         });
       }
 
       function boot() {
-        // Render the appropriate table based on view parameter
-          // Render the appropriate table based on view parameter (or load iframe content)
-          if (!useIframe) {
-            const mainContent = document.getElementById('main_content');
-            if (mainContent) {
-              const data = ticketData[viewType] || ticketData.my;
-              mainContent.innerHTML = generateTable(data);
-              console.log(`[BetterWeb Test] Rendered ${viewType} tickets view`);
-            }
-          } else {
-            // file:// mode without view param -> show external list in iframe
-            loadIntoMain('incident_list.do.html');
-          }
-
-          setupNav();
-
+        const mainContent = document.getElementById('main_content');
+        if (mainContent) {
+          const data = ticketData[viewType] || ticketData.new;
+          mainContent.innerHTML = generateTable(data);
+        }
         setupNav();
       }
 
