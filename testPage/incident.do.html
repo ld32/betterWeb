@@ -185,8 +185,9 @@
       comments.forEach(function(c) { addCard(c.from, c.type, c.body, c.time); });
     }
 
-    // Set header title dynamically
+    // Set header title and page title dynamically
     document.getElementById('header_title').textContent = 'Incident ' + ticketId;
+    document.title = ticketId + ' Incident';
 
     // Replay saved comments when page loads
     loadPersistedComments();
