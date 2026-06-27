@@ -1,4 +1,33 @@
+function hideLoadingOverlay() {
+  var loadingOverlay = document.getElementById("loadingOverlay");
+  loadingOverlay && loadingOverlay.remove();
+}
+
+function startInitialLoad() {
+  chrome.storage.local.set({
+    configLoadTime: getDate()
+  }, function() {}), chrome.storage.local.get({
+    myConfigs: "myConfigs"
+  }, function(ob) {
+    if ("myConfigs" != ob.myConfigs) {
+      var obj = JSON.parse(ob.myConfigs), keys = Object.keys(obj);
+      for (let i = 0; i < keys.length; i++) null != obj[keys[i]][0] && configMap.set(obj[keys[i]][0], obj[keys[i]][1]), 
+      null != obj[keys[i]][0] && obj[keys[i]][0].startsWith("Config") && 3 < obj[keys[i]][1].length && (document.getElementById(obj[keys[i]][0]).innerText = obj[keys[i]][1]);
+    }
+    configMap.has("current") && configMap.get("current") ? document.getElementById(configMap.get("current")).click() : (document.getElementById("Config1").click(), 
+    setTimeout(() => {
+      alert("Please click the button 'Import from Github' to set up your config.");
+    }, 5e3)), hideLoadingOverlay();
+  });
+}
+
 document.getElementById("popup").innerHTML = `
+<div id="loadingOverlay" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.92);color:#1f2937;font-size:16px;font-weight:600;letter-spacing:0.2px;">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border:1px solid #d1d5db;border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.08);">
+    <span style="width:16px;height:16px;border:3px solid #d1d5db;border-top-color:#2563eb;border-radius:50%;display:inline-block;animation:betterWebSpin 0.8s linear infinite;"></span>
+    <span>Loading, please be patient...</span>
+  </div>
+</div>
 <a name="top"></a>
 <h1>Better web dev <span id="myVersion" class="label" style="font-size:15px; color:#8ebf42;"></span></h1>
 
@@ -157,6 +186,36 @@ function escapeHtml(value) {
   return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+function decodeEncodedText(value) {
+  return String(value).replace(/&NPOUND/g, "#");
+}
+
+function normalizeUrlCandidate(rawValue) {
+  rawValue = String(rawValue || "").trim();
+  return rawValue ? /^https?:\/\//i.test(rawValue) ? rawValue : /^www\./i.test(rawValue) || /^[a-z0-9.-]+\.[a-z]{2,}(?:[/:?#].*)?$/i.test(rawValue) ? "https://" + rawValue : null : null;
+}
+
+function updateRowLinks(row, httpsOnly = !1) {
+  var keyInput = row.cells[2]?.querySelector("textarea"), valueInput = row.cells[3]?.querySelector("textarea");
+  const linkWrap = row.querySelector(".url-link-preview");
+  if (keyInput && valueInput && linkWrap) {
+    row = keyInput.value.trim(), keyInput = valueInput.value.trim();
+    if (linkWrap.innerHTML = "", row || keyInput) {
+      var candidates = (row + " " + keyInput).split(/[\s,]+/), uniqueUrls = new Set();
+      for (let i = 0; i < candidates.length; i++) {
+        var token = String(candidates[i] || "").trim();
+        !token || httpsOnly && !token.startsWith("https:") || (token = normalizeUrlCandidate(token)) && uniqueUrls.add(token);
+      }
+      uniqueUrls.forEach(url => {
+        var link = document.createElement("a");
+        link.href = url, link.target = "_blank", link.rel = "noopener noreferrer", 
+        link.style.display = "block", link.style.wordBreak = "break-all", link.title = url, 
+        link.textContent = "link", linkWrap.appendChild(link);
+      });
+    }
+  }
+}
+
 function loadConfig(evt, config) {
   configMap.set("current", config), deleteAll();
   var tablinks = document.getElementsByClassName("tablinks");
@@ -245,15 +304,21 @@ function addRow06(key, value) {
   var row = document.createElement("tr"), height = 0, a = value.split("\n");
   for (let i = 0; i < a.length; i++) height += Math.ceil(a[i].length / 80);
   row.className = "input";
-  key = escapeHtml(key), value = escapeHtml(value), row.innerHTML = `
+  var key = escapeHtml(key), value = escapeHtml(value), key = (row.innerHTML = `
     <td class="table-btn"><button class="button-delete" id="deleteRow06">Delete</button></td>
     <td><a href="#top">Top</a></td>
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Variable" class="shortcut form-control">${key}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${value}</textarea></td>
-  `, key = document.getElementById("table06").tBodies[0];
-  key.insertBefore(row, key.firstChild), document.getElementById("deleteRow06").addEventListener("click", function(evt) {
+    <td><div class="url-link-preview"></div></td>
+  `, document.getElementById("table06").tBodies[0]), value = (key.insertBefore(row, key.firstChild), 
+  row.querySelector("#deleteRow06")), key = row.cells[2].querySelector("textarea"), valueInput = row.cells[3].querySelector("textarea");
+  value.addEventListener("click", function(evt) {
     deleteRow06(this), evt.preventDefault();
-  });
+  }), key.addEventListener("blur", function() {
+    updateRowLinks(row, !1);
+  }), valueInput.addEventListener("blur", function() {
+    updateRowLinks(row, !1);
+  }), updateRowLinks(row, !1);
 }
 
 function deleteRow06(el) {
@@ -271,7 +336,7 @@ function addRow00(key, value) {
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${key}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${value}</textarea></td>
   `, key = document.getElementById("table00").tBodies[0];
-  key.insertBefore(row, key.firstChild), document.getElementById("deleteRow00").addEventListener("click", function(evt) {
+  key.insertBefore(row, key.firstChild), row.querySelector("#deleteRow00").addEventListener("click", function(evt) {
     deleteRow00(this), evt.preventDefault();
   });
 }
@@ -291,7 +356,7 @@ function addRow01(shortcut, autotext) {
     <td class="textarea-shortcut"><textarea id="f1" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
   `, shortcut = document.getElementById("table01").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow01").addEventListener("click", function(evt) {
+  shortcut.insertBefore(row, shortcut.firstChild), row.querySelector("#deleteRow01").addEventListener("click", function(evt) {
     deleteRow01(this), evt.preventDefault();
   }), document.getElementById("f1").addEventListener("blur", function(evt) {
     var data = new Map(), n1 = document.getElementById("table01").rows.length;
@@ -311,15 +376,21 @@ function addRow02(shortcut, autotext) {
   var row = document.createElement("tr"), height = 0, a = autotext.split("\n");
   for (let i = 0; i < a.length; i++) height += Math.ceil(a[i].length / 80);
   row.className = "input";
-  shortcut = escapeHtml(shortcut), autotext = escapeHtml(autotext), row.innerHTML = `
+  var shortcut = escapeHtml(shortcut), autotext = escapeHtml(autotext), shortcut = (row.innerHTML = `
       <td class="table-btn" > <button class="button-delete" id="deleteRow02">Delete</button></td>
     <td><a href="#top">Top</a></td>
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
-      `, shortcut = document.getElementById("table02").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow02").addEventListener("click", function(evt) {
+    <td><div class="url-link-preview"></div></td>
+      `, document.getElementById("table02").tBodies[0]), autotext = (shortcut.insertBefore(row, shortcut.firstChild), 
+  row.querySelector("#deleteRow02")), shortcut = row.cells[2].querySelector("textarea"), valueInput = row.cells[3].querySelector("textarea");
+  autotext.addEventListener("click", function(evt) {
     deleteRow02(this), evt.preventDefault();
-  }), document.getElementById("f2").addEventListener("blur", function(evt) {
+  }), shortcut.addEventListener("blur", function() {
+    updateRowLinks(row, !0);
+  }), valueInput.addEventListener("blur", function() {
+    updateRowLinks(row, !0);
+  }), updateRowLinks(row, !0), document.getElementById("f2").addEventListener("blur", function(evt) {
     var data = new Map(), n1 = document.getElementById("table02").rows.length;
     for (let i = 0; i < n1; i++) {
       var key = document.getElementById("table02").rows[i].cells[0].children[0].value.trim().split(/\s+/)[0];
@@ -344,7 +415,7 @@ function addRow03(shortcut, autotext) {
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
       `, shortcut = document.getElementById("table03").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow03").addEventListener("click", function(evt) {
+  shortcut.insertBefore(row, shortcut.firstChild), row.querySelector("#deleteRow03").addEventListener("click", function(evt) {
     deleteRow03(this), evt.preventDefault();
   });
 }
@@ -364,7 +435,7 @@ function addRow04(shortcut, autotext) {
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
       `, shortcut = document.getElementById("table04").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow04").addEventListener("click", function(evt) {
+  shortcut.insertBefore(row, shortcut.firstChild), row.querySelector("#deleteRow04").addEventListener("click", function(evt) {
     deleteRow04(this), evt.preventDefault();
   });
 }
@@ -384,7 +455,7 @@ function addRow05(shortcut, autotext) {
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
       `, shortcut = document.getElementById("table05").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow05").addEventListener("click", function(evt) {
+  shortcut.insertBefore(row, shortcut.firstChild), row.querySelector("#deleteRow05").addEventListener("click", function(evt) {
     deleteRow05(this), evt.preventDefault();
   });
 }
@@ -404,7 +475,7 @@ function addRow07(shortcut, autotext) {
     <td class="textarea-shortcut"><textarea id="f2" type="text" rows="${height}" placeholder="Shortcut" class="shortcut form-control">${shortcut}</textarea></td>
     <td class="textarea"><textarea rows="${height}" placeholder="Something" class="autotext" onkeyup="textAreaAdjust(this)">${autotext}</textarea></td>
       `, shortcut = document.getElementById("table07").tBodies[0];
-  shortcut.insertBefore(row, shortcut.firstChild), document.getElementById("deleteRow07").addEventListener("click", function(evt) {
+  shortcut.insertBefore(row, shortcut.firstChild), row.querySelector("#deleteRow07").addEventListener("click", function(evt) {
     deleteRow07(this), evt.preventDefault();
   });
 }
@@ -412,6 +483,23 @@ function addRow07(shortcut, autotext) {
 function deleteRow07(el) {
   for (;el.parentNode && "tr" != el.tagName.toLowerCase(); ) el = el.parentNode;
   el.parentNode.removeChild(el);
+}
+
+function validateImportedConfig(importedObj) {
+  if (importedObj && importedObj.urls) {
+    var key, importedUrls = importedObj.urls;
+    let importedUrlsValue = "";
+    for (key in importedUrls) if ("URLs" === decodeEncodedText(importedUrls[key][0])) {
+      importedUrlsValue = decodeEncodedText(importedUrls[key][1]);
+      break;
+    }
+    if (importedUrlsValue) for (var k of configMap.keys()) if (k.startsWith("Config")) {
+      k = configMap.get(k);
+      if (k && k === importedUrlsValue) return tempAlert('Error: Duplicate configure for "' + escapeHtml(importedUrlsValue) + '". This configuration already exists. Please delete one of them in add-on option page!', 5e3), 
+      !1;
+    }
+  }
+  return !0;
 }
 
 document.addEventListener("visibilitychange", function() {
@@ -436,20 +524,10 @@ document.addEventListener("visibilitychange", function() {
     let version = chrome.runtime.getManifest().version;
     document.getElementById("myVersion").innerText = version;
   }
-  chrome.storage.local.set({
-    configLoadTime: getDate()
-  }, function() {}), chrome.storage.local.get({
-    myConfigs: "myConfigs"
-  }, function(ob) {
-    if ("myConfigs" != ob.myConfigs) {
-      var obj = JSON.parse(ob.myConfigs), keys = Object.keys(obj);
-      for (let i = 0; i < keys.length; i++) null != obj[keys[i]][0] && configMap.set(obj[keys[i]][0], obj[keys[i]][1]), 
-      null != obj[keys[i]][0] && obj[keys[i]][0].startsWith("Config") && 3 < obj[keys[i]][1].length && (document.getElementById(obj[keys[i]][0]).innerText = obj[keys[i]][1]);
-    }
-    configMap.has("current") && configMap.get("current") ? document.getElementById(configMap.get("current")).click() : ($("#Config1").click(), 
-    setTimeout(() => {
-      alert("Please click the button 'Import from Github' to set up your config.");
-    }, 1e3));
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      startInitialLoad();
+    });
   });
 }), document.getElementById("fullPage").addEventListener("click", function(evt) {
   chrome.runtime.openOptionsPage(() => {
@@ -574,49 +652,49 @@ fileSelector.addEventListener("change", event => {
   reader.onload = function(event) {
     event = event.target.result;
     if (0 !== (newData = event.replace(/&NPOUND/g, "#")).length) {
-      deleteAll();
       var obj = JSON.parse(newData);
-      if (null != obj) {
+      if (null != obj && validateImportedConfig(obj)) {
+        deleteAll();
         var keys = Object.keys(obj);
         for (let i = 0; i < keys.length; i++) switch (keys[i]) {
          case "urls":
           var data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow06(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow06(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "keywords":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow00(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow00(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "controls":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow01(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow01(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "shortcuts":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow02(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow02(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "sentences":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow03(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow03(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "hides":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow04(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow04(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "fills":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow05(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow05(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "bookmark":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow07(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow07(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
         }
         saveAll();
       }
@@ -666,9 +744,10 @@ function getGitbubFileList() {
 }
 
 function deleteAll() {
-  $("#table00").find("tr").remove(), $("#table01").find("tr").remove(), $("#table02").find("tr").remove(), 
-  $("#table03").find("tr").remove(), $("#table04").find("tr").remove(), $("#table05").find("tr").remove(), 
-  $("#table06").find("tr").remove(), $("#table07").find("tr").remove();
+  document.querySelectorAll("#table00 tr").forEach(row => row.remove()), document.querySelectorAll("#table01 tr").forEach(row => row.remove()), 
+  document.querySelectorAll("#table02 tr").forEach(row => row.remove()), document.querySelectorAll("#table03 tr").forEach(row => row.remove()), 
+  document.querySelectorAll("#table04 tr").forEach(row => row.remove()), document.querySelectorAll("#table05 tr").forEach(row => row.remove()), 
+  document.querySelectorAll("#table06 tr").forEach(row => row.remove()), document.querySelectorAll("#table07 tr").forEach(row => row.remove());
 }
 
 function getDate() {
@@ -803,48 +882,48 @@ function downloadAndParseGithub(url, fileName) {
     r = JSON.parse(r.replace(/&NPOUND/g, "#"));
     if (cout(r), "base64" != r.encoding) cout("unknown encoding " + r.encoding); else {
       var obj = JSON.parse(decodeURIComponent(escape(window.atob(r.content))));
-      if (cout(atob(r.content)), null != obj) {
+      if (cout(atob(r.content)), null != obj && validateImportedConfig(obj)) {
         deleteAll();
         var keys = Object.keys(obj);
         for (let i = 0; i < keys.length; i++) switch (keys[i]) {
          case "urls":
           var data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow06(data[ks[i]][0], data[ks[i]][1].replace(/&NPOUND/g, "#"));
+          for (let i = 0; i < ks.length; i++) addRow06(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "keywords":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow00(data[ks[i]][0], data[ks[i]][1].replace(/&NPOUND/g, "#"));
+          for (let i = 0; i < ks.length; i++) addRow00(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "controls":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow01(data[ks[i]][0].replace(/&NPOUND/g, "#"), data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow01(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "shortcuts":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow02(data[ks[i]][0].replace(/&NPOUND/g, "#"), data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow02(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "sentences":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow03(data[ks[i]][0], data[ks[i]][1]);
+          for (let i = 0; i < ks.length; i++) addRow03(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "hides":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow04(data[ks[i]][0], data[ks[i]][1].replace(/&NPOUND/g, "#"));
+          for (let i = 0; i < ks.length; i++) addRow04(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "fills":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow05(data[ks[i]][0], data[ks[i]][1].replace(/&NPOUND/g, "#"));
+          for (let i = 0; i < ks.length; i++) addRow05(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
           break;
 
          case "bookmark":
           data = obj[keys[i]], ks = Object.keys(data);
-          for (let i = 0; i < ks.length; i++) addRow07(data[ks[i]][0].replace(/&NPOUND/g, "#"), data[ks[i]][1].replace(/&NPOUND/g, "#"));
+          for (let i = 0; i < ks.length; i++) addRow07(decodeEncodedText(data[ks[i]][0]), decodeEncodedText(data[ks[i]][1]));
         }
         saveAll();
       }

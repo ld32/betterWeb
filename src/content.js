@@ -3,7 +3,7 @@ urlMap.set("bookmarkTicketColor1", "red"), urlMap.set("newTicketColor", "pink"),
 urlMap.set("holdTicketColor", "blue"), urlMap.set("assignedTicketColor", "yellow"), 
 urlMap.set("closedTicketColor", "white"), new Map()), shortcutMap = new Map(), shortcutCommentMap = new Map(), sentenceMap = new Map(), hideMap = new Map(), controlMap = new Map(), urlArray = {}, keywordArray = {}, controlArray = {}, shortcutArray = {}, sentenceArray = {}, hideArray = {}, fillArray = {}, favorArray = {}, fillButtonMap = new Map(), xpathMap = new Map(), controlButtonMap = new Map(), excelRowValue = "", lastText = "", lastTarget = null, chatTarget = null, sending = !1, timeOuts = {}, currentText = "", firstName = "", myFirstName = "myFirstName", myID = "", myIDColumn = 0, classColumn = 0, classificationPrompt = "", classificationColor = [], greeting = "", listPagePaths = [], detailPagePaths = [], leftLinePositionListPage = 0, rightLinePositionListPage = 0, leftLinePositionDetailPage = 0, rightLinePositionDetailPage = 0, leftLineActionDetailPage = "", rightLineActionDetailPage = "", firstLineX = 0, firstLineX1 = 0, firstNameWarning = "", hintIndex = 0, hintText = new Map(), lastInsertStart = 0, lastInsertLength = 0, lastTextWithoutInsert = "", isHiding = !1, insertLength = 0, insertStart = 0, ctrlDown = !1, cmdString = "", ctrlKey = 17, totalInsertLengthToday = 0, totalInsertLengthThisMonth = 0, todayTickets = {};
 
-let currentConfig = "", configMap = new Map(), editableDiv = !1, outsideKeyPress = !1, urlsTmp = "", lastKeyTime = 0, alarm = new Map(), interv, cUrl = "", helpMsg = new Map(), savedDate = "", gotNewData = "no", isSelfClick = !1, currentID = "empty", ticketLink = "", autoRun = "", lastChar = "", lastKey = "", updateTimeout, myPrompt = "", jobID = "", chatContext = "", leftURL = "", rightURL = "", chatSessionURL = "", saveDrafTimeout = null, ticketURL = "", useBackgroundAPI = null, aiProvider = null, ollamaUrl = null, ollamaModel = null, openaiApiKey = null, lastWord = "";
+let currentConfig = "", configMap = new Map(), editableDiv = !1, outsideKeyPress = !1, lastKeyTime = 0, alarm = new Map(), interv, cUrl = "", helpMsg = new Map(), savedDate = "", gotNewData = "no", isSelfClick = !1, currentID = "empty", ticketLink = "", autoRun = "", lastChar = "", lastKey = "", updateTimeout, myPrompt = "", jobID = "", chatContext = "", leftURL = "", rightURL = "", chatSessionURL = "", saveDrafTimeout = null, ticketURL = "", useBackgroundAPI = null, aiProvider = null, ollamaUrl = null, ollamaModel = null, openaiApiKey = null, lastWord = "";
 
 var draftMarker = "", draft = "";
 
@@ -129,8 +129,6 @@ function loadCon() {
         var urls = obj[keys[i]][1].split(/\s+/);
         for (let j = 0; j < urls.length; j++) -1 != currentURL.indexOf(urls[j]) && (cUrl = urls[j], 
         currentConfig = obj[keys[i]][0], findURL = !0);
-        -1 != urlsTmp.indexOf(obj[keys[i]][1]) && alert('Error: Dupplicate configure for "' + obj[keys[i]][1] + '". Please delete one of them in add-on option page!'), 
-        urlsTmp += " " + obj[keys[i]][1];
       }
       findURL && loadConfig();
     }
