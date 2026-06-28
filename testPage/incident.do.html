@@ -74,7 +74,7 @@
         <label for="caller">Caller</label>
         <div>
           <!-- mimic reference link style -->
-          <a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">David Miller</a>
+          <a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">Smith Miller</a>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
       <!-- "Additional comments" — kept visible by hideAll() -->
       <!-- childNodes must be adjacent (no whitespace between) so indices match what content.js expects:
            childNodes[0]=from, childNodes[1]=type, childNodes[2]=time, childNodes[3]=body -->
-      <div class="h-card h-card_md h-card_comments"><div class="card-from">David Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-24 08:30:00</div><div class="card-body">Hi, David, I'm unable to log into the portal. Getting an "invalid credentials" error even after resetting my password.</div></div>
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Smith Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-24 08:30:00</div><div class="card-body">Hi, David, I'm unable to log into the portal. Getting an "invalid credentials" error even after resetting my password.</div></div>
 
       <!-- "Work notes" — kept visible by hideAll() -->
       <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-24 09:15:00</div><div class="card-body">Checked AD account — account is not locked. Suspecting a cache issue. Asked user to clear browser cache and retry.</div></div>
@@ -111,10 +111,10 @@
       <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">System Update</div><div class="card-time">2025-10-24 09:16:00</div><div class="card-body">State changed from New → In Progress by Jane Doe.</div></div>
 
       <!-- "Additional comments" — kept visible by hideAll() -->
-      <div class="h-card h-card_md h-card_comments"><div class="card-from">David Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-25 10:00:00</div><div class="card-body">Cleared the cache but still seeing the same error. Please advise.</div></div>
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Smith Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-25 10:00:00</div><div class="card-body">Cleared the cache but still seeing the same error. Please advise.</div></div>
 
       <!-- "Email Notification" — HIDDEN by hideAll() -->
-      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Email Notification</div><div class="card-time">2025-10-25 10:01:00</div><div class="card-body">Auto-notification sent to David Miller: ticket update.</div></div>
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Email Notification</div><div class="card-time">2025-10-25 10:01:00</div><div class="card-body">Auto-notification sent to Smith Miller: ticket update.</div></div>
 
       <!-- "Work notes" — kept visible by hideAll() -->
       <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-26 09:00:00</div><div class="card-body">Escalating to L2. Possible backend auth service issue affecting multiple users.</div></div>
@@ -138,9 +138,9 @@
 
     <!-- Customer reply simulator -->
     <div class="activity-input" style="margin-top:24px; padding-top:16px; border-top: 2px dashed #c0c8d8;">
-      <label style="font-weight:600; color:#1a73e8;">Simulate customer reply (as David Miller)</label>
-      <textarea id="customer-reply-textarea" placeholder="Type a reply from David Miller..."></textarea>
-      <button id="btn_customer_reply" style="margin-top:6px; background:#e8700a; color:#fff; border:0; padding:8px 14px; border-radius:4px; cursor:pointer;">Post as David Miller</button>
+      <label style="font-weight:600; color:#1a73e8;">Simulate customer reply (as Smith Miller)</label>
+      <textarea id="customer-reply-textarea" placeholder="Type a reply from Smith Miller..."></textarea>
+      <button id="btn_customer_reply" style="margin-top:6px; background:#e8700a; color:#fff; border:0; padding:8px 14px; border-radius:4px; cursor:pointer;">Post as Smith Miller</button>
     </div>
 
     </div><!-- #form_activity -->
@@ -207,14 +207,14 @@
       textarea.value = '';
     });
 
-    // Customer reply button — posts as David Miller
+    // Customer reply button — posts as Smith Miller
     document.getElementById('btn_customer_reply').addEventListener('click', function() {
       var textarea = document.getElementById('customer-reply-textarea');
       var text = textarea.value.trim();
       if (!text) return;
       var time = nowString();
-      addCard('David Miller', 'Additional comments', text, time);
-      persistComment('David Miller', 'Additional comments', text, time);
+      addCard('Smith Miller', 'Additional comments', text, time);
+      persistComment('Smith Miller', 'Additional comments', text, time);
       textarea.value = '';
     });
 
