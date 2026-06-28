@@ -205,12 +205,34 @@
       comments.forEach(function(c) { addCard(c.from, c.type, c.body, c.time); });
     }
 
+    function injectFirstCommentPreview() {
+      var stream = document.querySelector('.activity-stream');
+      var firstCard = stream ? stream.querySelector('.h-card.h-card_md.h-card_comments') : null;
+      if (!stream || !firstCard) return;
+
+      var firstBody = firstCard.querySelector('.card-body');
+      var firstText = firstBody ? firstBody.textContent.trim() : '';
+
+      var preview = document.createElement('div');
+      preview.id = 'first-comment-preview';
+      preview.style.border = '1px dashed #f09a9a';
+      preview.style.background = '#fff3f3';
+      preview.style.padding = '8px 10px';
+      preview.style.marginBottom = '8px';
+      preview.style.borderRadius = '6px';
+      preview.innerHTML =
+        '<div style="font-family:monospace;color:#8a2f2f;">' + firstText + '</div>';
+
+      stream.insertBefore(preview, firstCard);
+    }
+
     // Set header title and page title dynamically
     document.getElementById('header_title').textContent = 'Incident ' + ticketId;
     document.title = ticketId;
 
     // Replay saved comments when page loads
     loadPersistedComments();
+    injectFirstCommentPreview();
 
     document.getElementById('btn_login_david').addEventListener('click', function() {
       setCurrentUser('David Miller', 'btn_login_david');
