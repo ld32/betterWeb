@@ -222,20 +222,29 @@
       setCurrentUser('Bob', 'btn_login_bob');
     });
 
-    // Save button — posts agent comment or work note
-    document.getElementById('btn_save').addEventListener('click', function() {
-      var type = document.getElementById('activity_type').value;
-      var textareaId = type === 'Work notes'
-        ? 'activity-stream-work_notes-textarea'
-        : 'activity-stream-comments-textarea';
-      var textarea = document.getElementById(textareaId);
-      var text = textarea.value.trim();
-      if (!text) return;
+    function postFromActivityInputs() {
+      var commentsTextarea = document.getElementById('activity-stream-comments-textarea');
+      var workNotesTextarea = document.getElementById('activity-stream-work_notes-textarea');
+      var commentsText = commentsTextarea.value.trim();
+      var workNotesText = workNotesTextarea.value.trim();
+      if (!commentsText && !workNotesText) return;
       var time = nowString();
-      addCard(currentUser, type, text, time);
-      persistComment(currentUser, type, text, time);
-      textarea.value = '';
-    });
+
+      if (commentsText) {
+        addCard(currentUser, 'Additional comments', commentsText, time);
+        persistComment(currentUser, 'Additional comments', commentsText, time);
+        commentsTextarea.value = '';
+      }
+
+      if (workNotesText) {
+        addCard(currentUser, 'Work notes', workNotesText, time);
+        persistComment(currentUser, 'Work notes', workNotesText, time);
+        workNotesTextarea.value = '';
+      }
+    }
+
+    document.getElementById('btn_save').addEventListener('click', postFromActivityInputs);
+    document.getElementById('btn_update').addEventListener('click', postFromActivityInputs);
 
     // Toggle attached images
     document.addEventListener('click', function(e) {
