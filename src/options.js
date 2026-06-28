@@ -58,6 +58,8 @@ document.getElementById("popup").innerHTML = `
    <button id="share">Export to Share</button>
   <a href="https://github.com/ld32/betterWeb/tree/main" id='howToSetup' target="_blank" rel="noopener noreferrer" class="btn btn-warning teaser">How to use?</a>
   <a href="https://chromewebstore.google.com/detail/my-prompts/ohmlhcmmjbponikechknmhedgojoaamp" target="_blank" rel="noopener noreferrer" class="btn btn-warning teaser">Please Rate Us</a>
+
+   <a href="https://ld32.github.io/betterWeb/testPage/incidentList.html" id='testPage' target="_blank" rel="noopener noreferrer" class="btn btn-warning teaser">Testing page</a>
  
 </fieldset>
 <div id="status1" style="color: #8d2803 font-size:18px;"></div>

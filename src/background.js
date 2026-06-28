@@ -38,6 +38,10 @@ function scheduleAlarm() {
 chrome.runtime.onInstalled.addListener(function(details) {
   "install" == details.reason && chrome.tabs.create({
     url: "options.html"
+  }), chrome.storage.local.set({
+    lastDownloadDate: Date.now()
+  }, function() {
+    chrome.runtime.lastError;
   });
 }), chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request && "string" == typeof request.greeting) {
