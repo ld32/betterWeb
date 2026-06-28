@@ -594,7 +594,7 @@ function getFirstName() {
     let des = null;
     null != (des = (newFormat ? $("macroponent-f51912f4c700201072b211d4d8c26010")[0].shadowRoot.querySelector("iframe").contentWindow.document.body.querySelector('textarea[name="incident.description"]') : $('textarea[name="incident.description"]')[0]).value) && 0 < des.length && -1 == des.indexOf(firstName) && (firstNameWarning = "First name from desc may not correct: " + firstName);
   }
-  (void 0 === (firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1)) || firstName.length < 2) && (t = document.getElementById("caller")?.value?.trim() || "", 
+  (void 0 === (firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1)) || firstName.length < 2) && (t = document.querySelector('label[for="caller"]')?.closest(".row")?.querySelector("a.linked")?.textContent?.trim() || "", 
   firstName = t.split(/\s+/)[0] || "");
 }
 
