@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Better Web Test - ServiceNow Mock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #1a73e8; color: #fff; padding: 10px 16px; font-weight: 600; }
+    .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    nav { background: #f5f7fb; border-right: 1px solid #e4e7ee; padding: 12px; }
+    nav h3 { font-size: 14px; margin: 8px 0; color: #333; }
+    nav a { display: block; color: #1a73e8; text-decoration: none; padding: 6px 4px; border-radius: 4px; font-size: 14px; }
+    nav a:hover { background: #eaf1fe; }
+    main { position: relative; padding: 16px; }
+    #gsft_main { width: 100%; height: calc(100vh - 48px); border: 0; }
+    .hint { font-size: 12px; color: #666; margin-top: 8px; }
+    
+    /* Table styles for wider fields */
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { border-bottom: 1px solid #eef1f6; padding: 12px 16px; text-align: left; }
+    th { background: #f7f9fc; font-weight: 600; white-space: nowrap; }
+    td { min-width: 100px; }
+    tr:hover { background: #fbfdff; }
+    .vt { vertical-align: top; }
+    .linked { color: #1a73e8; text-decoration: none; }
+    .linked:hover { text-decoration: underline; }
+    .formlink { text-decoration: none; }
+    
+    /* Specific column widths for better spacing */
+    /* Tighten gap between first (#) and second (blank) column */
+    th:nth-child(1), td:nth-child(1) { width: 6px; text-align: center; padding-right: 0px; } /* # */
+    th:nth-child(2), td:nth-child(2) { width: 8px; padding-left: 0; padding-right: 0; } /* empty */
+    th:nth-child(3), td:nth-child(3) { width: 120px; } /* Number */
+    th:nth-child(4), td:nth-child(4) { width: 250px; } /* Short description */
+    th:nth-child(5), td:nth-child(5) { width: 150px; } /* Updated by */
+    th:nth-child(6), td:nth-child(6) { width: 150px; } /* Assignment group */
+    th:nth-child(7), td:nth-child(7) { width: 150px; } /* Caller */
+    th:nth-child(8), td:nth-child(8) { width: 120px; } /* Updated */
+  </style>
+</head>
+<body>
+  <header>ServiceNow Mock — Better Web Testing Shell</header>
+  <div class="app">
+    <nav>
+      <h3>Navigation</h3>
+        <a href="?view=new">New Tickets</a>
+        <a href="?view=my">My Tickets</a>
+
+      <div class="hint">Links load into the main iframe like ServiceNow.</div>
+    </nav>
+    <main>
+      <!-- Content area: will be replaced by an iframe when running on file:// -->
+        <div id="main_content" aria-live="polite"></div>
+    </main>
+  </div>
+  <script>
+    (function () {
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewType = urlParams.get('view') || 'new'; // default to 'new' tickets
+
+        // Data for different views
+        const ticketData = {
+          new: [
+            { num: 'INC0000004', desc: 'Password reset request', updatedBy: 'System Admin', group: '', caller: 'Emma Wilson', time: '10-27 11:30', timeago: '1h ago', state: 'New' },
+            { num: 'INC0000005', desc: 'Software installation needed', updatedBy: 'Help Desk', group: '', caller: 'James Brown', time: '10-27 10:15', timeago: '2h ago', state: 'New' },
+            { num: 'INC0000006', desc: 'Network printer offline', updatedBy: 'IT Support', group: '', caller: 'Sarah Davis', time: '10-27 09:45', timeago: '3h ago', state: 'New' },
+            { num: 'INC0000010', desc: 'Blue screen on startup', updatedBy: 'System Admin', group: '', caller: 'Tom Baker', time: '10-27 08:30', timeago: '4h ago', state: 'New' },
+            { num: 'INC0000011', desc: 'Outlook keeps crashing', updatedBy: 'Help Desk', group: '', caller: 'Linda Chen', time: '10-27 08:00', timeago: '5h ago', state: 'New' },
+            { num: 'INC0000012', desc: 'Unable to connect to SharePoint', updatedBy: 'IT Support', group: '', caller: 'Mark Evans', time: '10-27 07:45', timeago: '5h ago', state: 'New' },
+            { num: 'INC0000013', desc: 'Keyboard not working after update', updatedBy: 'System Admin', group: '', caller: 'Nancy Fox', time: '10-27 07:20', timeago: '6h ago', state: 'New' },
+            { num: 'INC0000014', desc: 'Monitor display flickering', updatedBy: 'Help Desk', group: '', caller: 'Oscar Grant', time: '10-27 07:00', timeago: '6h ago', state: 'New' },
+            { num: 'INC0000015', desc: 'Access denied to HR portal', updatedBy: 'IT Support', group: '', caller: 'Paula Hart', time: '10-27 06:30', timeago: '7h ago', state: 'New' },
+            { num: 'INC0000016', desc: 'Slow internet on 2nd floor', updatedBy: 'System Admin', group: '', caller: 'Quinn Irwin', time: '10-27 06:00', timeago: '7h ago', state: 'New' },
+            { num: 'INC0000017', desc: 'Phone not receiving calls', updatedBy: 'Help Desk', group: '', caller: 'Rachel Jones', time: '10-27 05:45', timeago: '8h ago', state: 'New' },
+            { num: 'INC0000018', desc: 'Laptop battery not charging', updatedBy: 'IT Support', group: '', caller: 'Steven King', time: '10-27 05:30', timeago: '8h ago', state: 'New' },
+            { num: 'INC0000019', desc: 'Cannot print to shared printer', updatedBy: 'System Admin', group: '', caller: 'Tina Lee', time: '10-27 05:00', timeago: '9h ago', state: 'New' },
+          ],
+          my: [
+            { num: 'INC0000001', desc: 'Login error on portal', updatedBy: 'David Dong', group: 'Service Desk', caller: 'David Miller', time: '10-26 09:12', timeago: '3d ago', state: 'Assigned' },
+            { num: 'INC0000002', desc: 'Email not syncing', updatedBy: 'Jane Smith', group: 'Messaging', caller: 'Alice Johnson', time: '10-26 10:02', timeago: '3d ago', state: 'On Hold' },
+            { num: 'INC0000003', desc: 'Cannot access VPN', updatedBy: 'Mike Johnson', group: 'Network', caller: 'Bob Smith', time: '10-26 08:45', timeago: '3d ago', state: 'Resolved' },
+            { num: 'INC0000020', desc: 'Two-factor auth not working', updatedBy: 'David Dong', group: 'Security', caller: 'Uma Nash', time: '10-25 14:00', timeago: '4d ago', state: 'Assigned' },
+            { num: 'INC0000021', desc: 'Excel file corrupted', updatedBy: 'David Dong', group: 'Service Desk', caller: 'Victor Owens', time: '10-25 13:30', timeago: '4d ago', state: 'In Progress' },
+            { num: 'INC0000022', desc: 'Screen sharing not working in Teams', updatedBy: 'Jane Smith', group: 'Messaging', caller: 'Wendy Park', time: '10-25 12:00', timeago: '4d ago', state: 'On Hold' },
+            { num: 'INC0000023', desc: 'Domain account locked out', updatedBy: 'David Dong', group: 'Security', caller: 'Xavier Quinn', time: '10-25 11:00', timeago: '4d ago', state: 'Assigned' },
+            { num: 'INC0000024', desc: 'Software license expired', updatedBy: 'Mike Johnson', group: 'Software', caller: 'Yara Ross', time: '10-24 16:00', timeago: '5d ago', state: 'Resolved' },
+            { num: 'INC0000025', desc: 'USB ports disabled on workstation', updatedBy: 'David Dong', group: 'Hardware', caller: 'Zack Stone', time: '10-24 15:00', timeago: '5d ago', state: 'In Progress' },
+            { num: 'INC0000026', desc: 'Remote desktop connection failing', updatedBy: 'Jane Smith', group: 'Network', caller: 'Amy Turner', time: '10-24 14:00', timeago: '5d ago', state: 'On Hold' },
+            { num: 'INC0000027', desc: 'New employee onboarding access', updatedBy: 'David Dong', group: 'Service Desk', caller: 'Brian Upton', time: '10-24 13:00', timeago: '5d ago', state: 'Assigned' },
+            { num: 'INC0000028', desc: 'Webcam not detected', updatedBy: 'Mike Johnson', group: 'Hardware', caller: 'Clara Vance', time: '10-24 12:00', timeago: '5d ago', state: 'Resolved' },
+            { num: 'INC0000029', desc: 'High CPU usage on server', updatedBy: 'David Dong', group: 'Infrastructure', caller: 'Derek West', time: '10-24 11:00', timeago: '5d ago', state: 'In Progress' },
+          ]
+        };
+
+        // Format "2026-05-30 14:23:45" -> "05-30 14:23" to match list column style
+        function fmtStoredTime(t) {
+          var m = t.match(/^\d{4}-(\d{2}-\d{2}) (\d{2}:\d{2})/);
+          return m ? m[1] + ' ' + m[2] : t;
+        }
+
+        function generateTable(data) {
+          const rows = data.map((ticket, idx) => {
+            // Pull any locally-saved "last update" for this ticket
+            const stored = JSON.parse(localStorage.getItem('betterWeb_lastUpdate_' + ticket.num) || 'null');
+            const updatedBy = stored ? stored.by : ticket.updatedBy;
+            const dispTime  = stored ? fmtStoredTime(stored.time) : ticket.time;
+            const timeago   = stored ? 'just now' : ticket.timeago;
+            return `
+            <tr>
+              <td class="vt">${idx + 1}</td>
+              <td class="vt"></td>
+              <td class="vt">
+                <a class="linked formlink" href="incident.do.html?sys_id=${ticket.num}"
+                   aria-label="Open record: ${ticket.num}">${ticket.num}</a>
+              </td>
+              <td class="vt">${ticket.desc}</td>
+              <td class="vt">${ticket.state}</td>
+              <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${updatedBy}</a></td>
+              <td class="vt">${ticket.group}</td>
+              <td class="vt"><a class="linked" sys_id="caller${idx}" href="sys_user.do.html?sys_id=caller${idx}">${ticket.caller}</a></td>
+              <td class="vt">
+                <div class="datex date-calendar-short" title="${dispTime}" timeago="${dispTime}"
+                     timeago-attrs="title" data-original-title="${timeago}">${dispTime}</div>
+                <div class="datex date-timeago" title="${dispTime}" timeago="${dispTime}"
+                     data-original-title="${dispTime}" null="${timeago}">${timeago}</div>
+              </td>
+            </tr>
+          `;
+          }).join('');
+
+          return `
+            <table role="grid" aria-label="incident list">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th></th>
+                  <th>Number</th>
+                  <th>Short description</th>
+                  <th>State</th>
+                  <th name="sys_updated_by">Updated by</th>
+                  <th>Assignment group</th>
+                  <th>Caller</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          `;
+        }
+
+      function setupNav() {
+        document.querySelectorAll('nav a[href]').forEach(a => {
+          a.addEventListener('click', (ev) => {
+            const href = a.getAttribute('href');
+            if (href && href.startsWith('?view=')) {
+              ev.preventDefault();
+              window.location.search = href;
+            }
+          });
+        });
+      }
+
+      function boot() {
+        const mainContent = document.getElementById('main_content');
+        if (mainContent) {
+          const data = ticketData[viewType] || ticketData.new;
+          mainContent.innerHTML = generateTable(data);
+        }
+        setupNav();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>

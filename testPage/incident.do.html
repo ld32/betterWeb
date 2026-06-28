@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Incident - Mock Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --border: #e4e7ee; }
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: 10px 16px; }
+    .form { max-width: 980px; margin: 12px auto; padding: 0 16px; }
+    .row { display: grid; grid-template-columns: 220px 1fr; gap: 8px 16px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+    label { color: #444; font-size: 13px; }
+    input[type="text"], select, textarea { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; width: 100%; }
+    textarea { min-height: 120px; }
+    .actions { padding: 12px 0; }
+    .actions button { background: #1a73e8; color: #fff; border: 0; padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+    .actions button:hover { background: #1559b2; }
+    .linked { color: #1a73e8; text-decoration: none; }
+
+    /* Activity stream */
+    .sn-controls.row { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+    .sn-controls.row label { font-size: 13px; color: #444; margin: auto 0; }
+    .sn-controls.row select { padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
+
+    .activity-stream { margin-top: 24px; }
+    .activity-stream h3 { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+
+    .h-card.h-card_md.h-card_comments { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; background: #fafafa; }
+    .h-card .card-from  { font-size: 12px; color: #888; display: inline; }
+    .h-card .card-type  { font-size: 12px; font-weight: 600; color: #555; display: inline; margin: 0 4px; }
+    .h-card .card-time  { font-size: 11px; color: #aaa; display: inline; }
+    .h-card .card-body  { font-size: 13px; color: #222; margin-top: 4px; white-space: pre-wrap; }
+
+    .activity-input { margin-top: 16px; }
+    .activity-input label { font-size: 13px; color: #444; display: block; margin-bottom: 4px; }
+    .activity-input textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; min-height: 80px; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong id="header_title">Incident</strong>
+  </header>
+
+  <div class="form">
+    <div id="form_main">
+      <div class="row">
+        <label for="number">Number</label>
+        <input id="number" type="text" value="INC0000001">
+      </div>
+
+      <div class="row">
+        <label for="short_description">Short description</label>
+        <input id="short_description" type="text" value="Login error on portal">
+      </div>
+
+      <div class="row">
+        <label for="incident.state">State</label>
+        <select id="incident.state" name="incident.state">
+          <option value="1">New</option>
+          <option value="2" selected>In Progress</option>
+          <option value="3">On Hold</option>
+          <option value="6">Resolved</option>
+          <option value="7">Closed</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="assignment_group">Assignment group</label>
+        <input id="assignment_group" type="text" value="Service Desk">
+      </div>
+
+      <div class="row">
+        <label for="caller">Caller</label>
+        <div>
+          <!-- mimic reference link style -->
+          <a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">David Miller</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="updated_time">Updated time</label>
+        <div id="updated_time">
+          <div class="datex date-calendar" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago" style="display:none">10-26-2025 09:12:00</div>
+          <div class="datex date-calendar-short" title="10-26 09:12" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago">10-26 09:12</div>
+          <div class="datex date-timeago" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" data-original-title="10-26-2025 09:12:00" null="3d ago" style="display:none">3d ago</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btn_save">Save</button>
+        <button id="btn_update">Update</button>
+      </div>
+    </div>
+
+    <div id="form_activity">
+    
+    <!-- Activity / conversation log -->
+    <div class="activity-stream">
+      <h3>Activity</h3>
+
+      <!-- "Additional comments" — kept visible by hideAll() -->
+      <!-- childNodes must be adjacent (no whitespace between) so indices match what content.js expects:
+           childNodes[0]=from, childNodes[1]=type, childNodes[2]=time, childNodes[3]=body -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">David Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-24 08:30:00</div><div class="card-body">Hi, I'm unable to log into the portal. Getting an "invalid credentials" error even after resetting my password.</div></div>
+
+      <!-- "Work notes" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-24 09:15:00</div><div class="card-body">Checked AD account — account is not locked. Suspecting a cache issue. Asked user to clear browser cache and retry.</div></div>
+
+      <!-- "System Update" — HIDDEN by hideAll() (not in the allowed types list) -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">System Update</div><div class="card-time">2025-10-24 09:16:00</div><div class="card-body">State changed from New → In Progress by Jane Doe.</div></div>
+
+      <!-- "Additional comments" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">David Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-25 10:00:00</div><div class="card-body">Cleared the cache but still seeing the same error. Please advise.</div></div>
+
+      <!-- "Email Notification" — HIDDEN by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Email Notification</div><div class="card-time">2025-10-25 10:01:00</div><div class="card-body">Auto-notification sent to David Miller: ticket update.</div></div>
+
+      <!-- "Work notes" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-26 09:00:00</div><div class="card-body">Escalating to L2. Possible backend auth service issue affecting multiple users.</div></div>
+
+      <!-- "Image uploaded" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Attachment uploaded</div><div class="card-time">05-28-2026 12:22:22</div><div class="card-body"><a href="#" class="linked attached-image-toggle">attached image</a><img src="https://1000logos.net/wp-content/uploads/2017/02/Harvard-Logo.png" alt="harvard_logo.png" style="max-width:320px;border-radius:4px;border:1px solid #e4e7ee;display:none;margin-top:4px;"><br>harvard_logo.png</div></div>
+
+      <!-- "Image uploaded" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Image uploaded</div><div class="card-time">05-28-2026 12:23:10</div><div class="card-body"><a href="#" class="linked attached-image-toggle">attached image</a><img src="https://placehold.co/320x180?text=network_trace.png" alt="network_trace.png" style="max-width:320px;border-radius:4px;border:1px solid #e4e7ee;display:none;margin-top:4px;"><br>network_trace.png</div></div>
+    </div>
+
+    <!-- Activity input textareas (used by content.js to insert comments) -->
+    <div class="activity-input">
+      <label for="activity-stream-comments-textarea">Additional comments</label>
+      <textarea id="activity-stream-comments-textarea" placeholder="Add a comment visible to the customer..."></textarea>
+    </div>
+    <div class="activity-input">
+      <label for="activity-stream-work_notes-textarea">Work notes</label>
+      <textarea id="activity-stream-work_notes-textarea" placeholder="Add internal work notes..."></textarea>
+    </div>
+
+    <!-- Customer reply simulator -->
+    <div class="activity-input" style="margin-top:24px; padding-top:16px; border-top: 2px dashed #c0c8d8;">
+      <label style="font-weight:600; color:#1a73e8;">Simulate customer reply (as David Miller)</label>
+      <textarea id="customer-reply-textarea" placeholder="Type a reply from David Miller..."></textarea>
+      <button id="btn_customer_reply" style="margin-top:6px; background:#e8700a; color:#fff; border:0; padding:8px 14px; border-radius:4px; cursor:pointer;">Post as David Miller</button>
+    </div>
+
+    </div><!-- #form_activity -->
+  </div><!-- .form -->
+  <script>
+    // Ticket ID from URL ?sys_id= or fall back to the #number field value
+    var ticketId = (new URLSearchParams(window.location.search)).get('sys_id')
+                   || document.getElementById('number').value;
+
+    function nowString() {
+      var d = new Date();
+      var pad = function(n) { return String(n).padStart(2, '0'); };
+      return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+             ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+
+    function addCard(from, type, body, time) {
+      var card = document.createElement('div');
+      card.className = 'h-card h-card_md h-card_comments';
+      // No whitespace between child divs — required by content.js childNodes indexing
+      card.innerHTML =
+        '<div class="card-from">' + from + '</div>' +
+        '<div class="card-type">' + type + '</div>' +
+        '<div class="card-time">' + (time || nowString()) + '</div>' +
+        '<div class="card-body">' + body + '</div>';
+      document.querySelector('.activity-stream').appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function persistComment(from, type, body, time) {
+      var key = 'betterWeb_comments_' + ticketId;
+      var comments = JSON.parse(localStorage.getItem(key) || '[]');
+      comments.push({ from: from, type: type, body: body, time: time });
+      localStorage.setItem(key, JSON.stringify(comments));
+      // Record who last updated this ticket so the list page can reflect it
+      localStorage.setItem('betterWeb_lastUpdate_' + ticketId, JSON.stringify({ by: from, time: time }));
+    }
+
+    function loadPersistedComments() {
+      var key = 'betterWeb_comments_' + ticketId;
+      var comments = JSON.parse(localStorage.getItem(key) || '[]');
+      comments.forEach(function(c) { addCard(c.from, c.type, c.body, c.time); });
+    }
+
+    // Set header title and page title dynamically
+    document.getElementById('header_title').textContent = 'Incident ' + ticketId;
+    document.title = ticketId;
+
+    // Replay saved comments when page loads
+    loadPersistedComments();
+
+    // Save button — posts agent comment or work note
+    document.getElementById('btn_save').addEventListener('click', function() {
+      var type = document.getElementById('activity_type').value;
+      var textareaId = type === 'Work notes'
+        ? 'activity-stream-work_notes-textarea'
+        : 'activity-stream-comments-textarea';
+      var textarea = document.getElementById(textareaId);
+      var text = textarea.value.trim();
+      if (!text) return;
+      var time = nowString();
+      addCard('Jane Doe (Agent)', type, text, time);
+      persistComment('Jane Doe (Agent)', type, text, time);
+      textarea.value = '';
+    });
+
+    // Customer reply button — posts as David Miller
+    document.getElementById('btn_customer_reply').addEventListener('click', function() {
+      var textarea = document.getElementById('customer-reply-textarea');
+      var text = textarea.value.trim();
+      if (!text) return;
+      var time = nowString();
+      addCard('David Miller', 'Additional comments', text, time);
+      persistComment('David Miller', 'Additional comments', text, time);
+      textarea.value = '';
+    });
+
+    // Toggle attached images
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('attached-image-toggle')) {
+        e.preventDefault();
+        var img = e.target.nextElementSibling;
+        img.style.display = img.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  </script>
+</html>
