@@ -213,17 +213,25 @@
       var firstBody = firstCard.querySelector('.card-body');
       var firstText = firstBody ? firstBody.textContent.trim() : '';
 
-      var preview = document.createElement('div');
-      preview.id = 'first-comment-preview';
-      preview.style.border = '1px dashed #f09a9a';
-      preview.style.background = '#fff3f3';
-      preview.style.padding = '8px 10px';
-      preview.style.marginBottom = '8px';
-      preview.style.borderRadius = '6px';
-      preview.innerHTML =
-        '<div style="font-family:monospace;color:#8a2f2f;">' + firstText + '</div>';
+      var previewWrap = document.createElement('div');
+      previewWrap.id = 'incident.short_description';
+      previewWrap.style.border = '1px dashed #f09a9a';
+      previewWrap.style.background = '#fff3f3';
+      previewWrap.style.padding = '8px 10px';
+      previewWrap.style.marginBottom = '8px';
+      previewWrap.style.borderRadius = '6px';
 
-      stream.insertBefore(preview, firstCard);
+      var previewTextarea = document.createElement('textarea');
+      previewTextarea.name = 'incident.short_description';
+      previewTextarea.value = firstText;
+      previewTextarea.readOnly = true;
+      previewTextarea.style.minHeight = '72px';
+      previewTextarea.style.width = '100%';
+      previewTextarea.style.border = '1px solid #efb6b6';
+      previewTextarea.style.background = '#fff';
+
+      previewWrap.appendChild(previewTextarea);
+      stream.parentNode.insertBefore(previewWrap, stream);
     }
 
     // Set header title and page title dynamically
