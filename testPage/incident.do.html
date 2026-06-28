@@ -42,6 +42,15 @@
     <strong id="header_title">Incident</strong>
   </header>
 
+  <div class="form" style="margin-top:8px;">
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:8px 0; border-bottom:1px solid #e4e7ee;">
+      <span style="font-size:13px; color:#444; font-weight:600;">Logged in as: <span id="logged_in_user">Smith Miller</span></span>
+      <button id="btn_login_david" type="button" style="background:#fff; border:1px solid #d2d7e3; color:#1a73e8; padding:6px 10px; border-radius:4px; cursor:pointer;">login as David</button>
+      <button id="btn_login_smith" type="button" style="background:#1a73e8; border:1px solid #1a73e8; color:#fff; padding:6px 10px; border-radius:4px; cursor:pointer;">login as Smith</button>
+      <button id="btn_login_bob" type="button" style="background:#fff; border:1px solid #d2d7e3; color:#1a73e8; padding:6px 10px; border-radius:4px; cursor:pointer;">login as Bob</button>
+    </div>
+  </div>
+
   <div class="form">
     <div id="form_main">
       <div class="row">
@@ -136,19 +145,30 @@
       <textarea id="activity-stream-work_notes-textarea" placeholder="Add internal work notes..."></textarea>
     </div>
 
-    <!-- Customer reply simulator -->
-    <div class="activity-input" style="margin-top:24px; padding-top:16px; border-top: 2px dashed #c0c8d8;">
-      <label style="font-weight:600; color:#1a73e8;">Simulate customer reply (as Smith Miller)</label>
-      <textarea id="customer-reply-textarea" placeholder="Type a reply from Smith Miller..."></textarea>
-      <button id="btn_customer_reply" style="margin-top:6px; background:#e8700a; color:#fff; border:0; padding:8px 14px; border-radius:4px; cursor:pointer;">Post as Smith Miller</button>
-    </div>
-
     </div><!-- #form_activity -->
   </div><!-- .form -->
   <script>
     // Ticket ID from URL ?sys_id= or fall back to the #number field value
     var ticketId = (new URLSearchParams(window.location.search)).get('sys_id')
                    || document.getElementById('number').value;
+    var currentUser = 'Smith Miller';
+
+    function setActiveLoginButton(activeId) {
+      ['btn_login_david', 'btn_login_smith', 'btn_login_bob'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        var isActive = id === activeId;
+        btn.style.background = isActive ? '#1a73e8' : '#fff';
+        btn.style.borderColor = isActive ? '#1a73e8' : '#d2d7e3';
+        btn.style.color = isActive ? '#fff' : '#1a73e8';
+      });
+    }
+
+    function setCurrentUser(name, activeButtonId) {
+      currentUser = name;
+      document.getElementById('logged_in_user').textContent = name;
+      setActiveLoginButton(activeButtonId);
+    }
 
     function nowString() {
       var d = new Date();
@@ -192,6 +212,16 @@
     // Replay saved comments when page loads
     loadPersistedComments();
 
+    document.getElementById('btn_login_david').addEventListener('click', function() {
+      setCurrentUser('David Miller', 'btn_login_david');
+    });
+    document.getElementById('btn_login_smith').addEventListener('click', function() {
+      setCurrentUser('Smith Miller', 'btn_login_smith');
+    });
+    document.getElementById('btn_login_bob').addEventListener('click', function() {
+      setCurrentUser('Bob', 'btn_login_bob');
+    });
+
     // Save button — posts agent comment or work note
     document.getElementById('btn_save').addEventListener('click', function() {
       var type = document.getElementById('activity_type').value;
@@ -202,19 +232,8 @@
       var text = textarea.value.trim();
       if (!text) return;
       var time = nowString();
-      addCard('Jane Doe (Agent)', type, text, time);
-      persistComment('Jane Doe (Agent)', type, text, time);
-      textarea.value = '';
-    });
-
-    // Customer reply button — posts as Smith Miller
-    document.getElementById('btn_customer_reply').addEventListener('click', function() {
-      var textarea = document.getElementById('customer-reply-textarea');
-      var text = textarea.value.trim();
-      if (!text) return;
-      var time = nowString();
-      addCard('Smith Miller', 'Additional comments', text, time);
-      persistComment('Smith Miller', 'Additional comments', text, time);
+      addCard(currentUser, type, text, time);
+      persistComment(currentUser, type, text, time);
       textarea.value = '';
     });
 
