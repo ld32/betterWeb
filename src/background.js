@@ -268,7 +268,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }).then(activeTabs => {
               activeTabs[0].id, tabs.findIndex(tab => tab.id === originalTabID);
               let serviceNowTab = null;
-              activeTabs = tabs.filter(tab => tab.url && tab.url.includes("service-now.com"));
+              activeTabs = tabs.filter(tab => tab.url && (tab.url.includes("service-now.com") || tab.url.includes("github.io")));
               1 < activeTabs.length ? serviceNowTab = activeTabs[activeTabs.length - 1] : 1 == activeTabs.length && (serviceNowTab = activeTabs[0]), 
               chrome.tabs.remove(originalTabID), chrome.storage.local.get([ "upDownClicked" ], function(result) {
                 void 0 !== result.upDownClicked && "yes" === result.upDownClicked && (chrome.tabs.reload(serviceNowTab.id), 
