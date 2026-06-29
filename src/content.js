@@ -2178,18 +2178,22 @@ $(document).ready(function() {
         classifyButton.style.zIndex = "10000", classifyButton.onclick = function() {
           let classifyTicketList = [];
           !function processTicket(i) {
-            var button, spinnerText, spinner;
-            if (i >= allTicketIDs.length) 0 < classifyTicketList.length ? (button = classifyButton, 
-            spinnerText = "Working...", button._originalText = button.textContent, 
-            (spinner = document.createElement("span")).className = "spinner", spinner.style.cssText = "display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top:2px solid #007bff;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px;", 
-            button.replaceChildren(spinner, document.createTextNode(spinnerText)), 
-            button.disabled = !0, classifyTicketList = classifyTicketList.slice(0, 5), 
-            chrome.storage.local.set({
-              classifyTicketList: classifyTicketList
-            }, function() {}), spinner = domain + "/incident.do?sys_id=" + classifyTicketList[0].split(":")[1], 
-            chrome.runtime.sendMessage({
-              greeting: "Open " + spinner
-            }, function(response) {})) : tmpAlert("No tickets need to be classified on this page.", 5e3); else {
+            if (i >= allTicketIDs.length) if (0 < classifyTicketList.length) {
+              button = classifyButton, spinnerText = "Working...", button._originalText = button.textContent, 
+              (spinner = document.createElement("span")).className = "spinner", 
+              spinner.style.cssText = "display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top:2px solid #007bff;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px;", 
+              button.replaceChildren(spinner, document.createTextNode(spinnerText)), 
+              button.disabled = !0, classifyTicketList = classifyTicketList.slice(0, 5), 
+              chrome.storage.local.set({
+                classifyTicketList: classifyTicketList
+              }, function() {});
+              const url = domain + "/incident.do?sys_id=" + classifyTicketList[0].split(":")[1];
+              -1 != currentURL.indexOf("classic") && (url = domain + "/incident.do.html?sys_id=" + classifyTicketList[0].split(":")[1]), 
+              chrome.runtime.sendMessage({
+                greeting: "Open " + url
+              }, function(response) {});
+            } else tmpAlert("No tickets need to be classified on this page.", 5e3); else {
+              var button, spinnerText, spinner;
               const ticketID = allTicketIDs[i], key1 = ticketID + "classificationResult";
               chrome.storage.local.get([ key1 ], function(result) {
                 if (result[key1]) processTicket(i + 1); else {
