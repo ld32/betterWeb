@@ -31,12 +31,14 @@
     /* Tighten gap between first (#) and second (blank) column */
     th:nth-child(1), td:nth-child(1) { width: 6px; text-align: center; padding-right: 0px; } /* # */
     th:nth-child(2), td:nth-child(2) { width: 8px; padding-left: 0; padding-right: 0; } /* empty */
-    th:nth-child(3), td:nth-child(3) { width: 120px; } /* Number */
-    th:nth-child(4), td:nth-child(4) { width: 250px; } /* Short description */
-    th:nth-child(5), td:nth-child(5) { width: 150px; } /* Updated by */
-    th:nth-child(6), td:nth-child(6) { width: 150px; } /* Assignment group */
-    th:nth-child(7), td:nth-child(7) { width: 150px; } /* Caller */
-    th:nth-child(8), td:nth-child(8) { width: 120px; } /* Updated */
+    th:nth-child(3), td:nth-child(3) { width: 110px; } /* Incient type */
+    th:nth-child(4), td:nth-child(4) { width: 120px; } /* Number */
+    th:nth-child(5), td:nth-child(5) { width: 250px; } /* Short description */
+    th:nth-child(6), td:nth-child(6) { width: 150px; } /* State */
+    th:nth-child(7), td:nth-child(7) { width: 150px; } /* Updated by */
+    th:nth-child(8), td:nth-child(8) { width: 150px; } /* Assignment group */
+    th:nth-child(9), td:nth-child(9) { width: 150px; } /* Caller */
+    th:nth-child(10), td:nth-child(10) { width: 120px; } /* Updated */
   </style>
 </head>
 <body>
@@ -111,6 +113,7 @@
             <tr>
               <td class="vt">${idx + 1}</td>
               <td class="vt"></td>
+              <td class="vt">Type</td>
               <td class="vt">
                  <a class="linked formlink" href="incident.do.html?sys_id=${ticket.num}"
                    aria-label="Open record: ${ticket.num}">${ticket.num}</a>
@@ -136,6 +139,7 @@
                 <tr>
                   <th>#</th>
                   <th></th>
+                  <th>Incient type</th>
                   <th>Number</th>
                   <th>Short description</th>
                   <th>State</th>

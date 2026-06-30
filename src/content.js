@@ -529,36 +529,14 @@ function getFirstName() {
     }
   }), "" == mostRecentMessage && (mostRecentMessage = $('textarea[name="incident.description"]').val()), 
   chrome.runtime.onMessage.addListener(message => {
+    var div, answer;
     -1 != currentURL.indexOf("service-now") && message.greeting.startsWith("answerFromChatgptBackground") && (hideLoadingSpinner(), 
-    void 0 !== message.chatAnswer) && "" !== message.chatAnswer.trim() && chrome.storage.local.get([ "classifyTicketListkkk" ], function(result) {
-      if (result.classifyTicketList) {
-        var div = document.createElement("div"), answer = document.createElement("div"), hint = (answer.style.cssText = "font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 10pt; color: rgb(0, 0, 0); display: inline-block; white-space: pre-wrap;", 
-        answer.textContent = message.chatAnswer, document.createElement("span"));
-        hint.id = "textPredictionTabHint", hint.style.cssText = "width: 49px; height: 19px; border-radius: 2px; border-style: solid; border-width: 1px; border-color: rgb(96, 94, 92); white-space: nowrap; font-size: 0.7em; padding-left: 3px; padding-right: 3px; padding-top: 1px; margin-left: 4px; position: relative; top: -2px;", 
-        hint.textContent = "tab", answer.appendChild(hint), div.appendChild(answer);
-        document.getElementById("activity-stream-comments-textarea").parentElement.append(div);
-        hint = currentID + "classificationResult";
-        chrome.storage.local.set({
-          [hint]: message.chatAnswer
-        }, function() {});
-        const newArry = result.classifyTicketList.slice(1) || [];
-        0 < newArry.length ? (chrome.storage.local.set({
-          classifyTicketList: newArry
-        }, function() {}), setTimeout(() => {
-          var url = domain + "/incident.do?sys_id=" + newArry[0].split(":")[1];
-          chrome.runtime.sendMessage({
-            greeting: "Open " + url
-          }, function(response) {});
-        }, 1e3)) : (chrome.storage.local.remove("classifyTicketList", function() {}), 
-        chrome.storage.local.set({
-          upDownClicked: "yes"
-        }, function() {}), chrome.runtime.sendMessage({
-          greeting: "closeTab"
-        }, response => {
-          response && response.farewell && response.farewell;
-        }));
-      }
-    });
+    void 0 !== message.chatAnswer) && "" !== message.chatAnswer.trim() && (div = document.createElement("div"), 
+    (answer = document.createElement("div")).style.cssText = "font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 10pt; color: rgb(0, 0, 0); display: inline-block; white-space: pre-wrap;", 
+    answer.textContent = message.chatAnswer, (message = document.createElement("span")).id = "textPredictionTabHint", 
+    message.style.cssText = "width: 49px; height: 19px; border-radius: 2px; border-style: solid; border-width: 1px; border-color: rgb(96, 94, 92); white-space: nowrap; font-size: 0.7em; padding-left: 3px; padding-right: 3px; padding-top: 1px; margin-left: 4px; position: relative; top: -2px;", 
+    message.textContent = "tab", answer.appendChild(message), div.appendChild(answer), 
+    div.className = "addedhere", document.getElementById("activity-stream-comments-textarea").parentElement.append(div));
   });
   let el;
   if ((void 0 === firstName || firstName.length < 2) && (newFormat ? $("macroponent-f51912f4c700201072b211d4d8c26010")[0].shadowRoot.querySelector("iframe").contentWindow.document.body.querySelector("#bf1d96e3c0a801640190725e63f8ac80 > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > input:nth-child(3)").value : el = $("#bf1d96e3c0a801640190725e63f8ac80 > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > input:nth-child(3)"), 
@@ -662,9 +640,11 @@ function makeDescriptionReadOnly() {
       let allDone = !0;
       for (let i = 0; i < newArry.length; i++) if (newArry[i].split(":")[0] != currentID) if (void 0 === await getFromStorage(newArry[i].split(":")[0] + "description")) {
         allDone = !1;
-        var sisid = newArry[i].split(":")[1], sisid = domain + "/incident.do?sys_id=" + sisid;
+        var sisid = newArry[i].split(":")[1];
+        let url = domain + "/incident.do?sys_id=" + sisid;
+        -1 != currentURL.indexOf("testPage") && (url = domain + "/betterWeb/testPage/incident.do.html?sys_id=" + sisid), 
         chrome.runtime.sendMessage({
-          greeting: "Open " + sisid
+          greeting: "Open " + url
         }, function(response) {});
         break;
       }
@@ -2187,8 +2167,8 @@ $(document).ready(function() {
               chrome.storage.local.set({
                 classifyTicketList: classifyTicketList
               }, function() {});
-              const url = domain + "/incident.do?sys_id=" + classifyTicketList[0].split(":")[1];
-              -1 != currentURL.indexOf("classic") && (url = domain + "/incident.do.html?sys_id=" + classifyTicketList[0].split(":")[1]), 
+              let url = domain + "/incident.do?sys_id=" + classifyTicketList[0].split(":")[1];
+              -1 != currentURL.indexOf("testPage") && (url = domain + "/betterWeb/testPage/incident.do.html?sys_id=" + classifyTicketList[0].split(":")[1]), 
               chrome.runtime.sendMessage({
                 greeting: "Open " + url
               }, function(response) {});
