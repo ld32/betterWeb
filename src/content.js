@@ -181,13 +181,13 @@ function processData(ob) {
     keys = Object.keys(obj);
     for (let i = 0; i < keys.length; i++) keywordArray[i] = [ obj[keys[i]][0], obj[keys[i]][1] ], 
     keywordMap.set(obj[keys[i]][0], obj[keys[i]][1]);
-    keys = (new MutationObserver(function(mutations) {
+    var leftLineParts = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         var k;
         mutation.target && mutation.target.innerText && (k = mutation.target.innerText, 
         keywordMap.has(k)) && (mutation.target.style.pointerEvents = "auto", "function" == typeof mutation.target.click) && setTimeout(() => mutation.target.click(), 500);
       });
-    }).observe(document.body, {
+    }), keys = (leftLineParts.observe(document.body, {
       attributes: !0,
       subtree: !0,
       childList: !0,
@@ -325,7 +325,7 @@ function processData(ob) {
       savedDate = result.savedDate4, saveConfig();
     }));
     let alarmAudio = null;
-    -1 != currentURL.indexOf("office.com/calendar") ? (new MutationObserver(function(mutations) {
+    if (-1 != currentURL.indexOf("office.com/calendar")) (leftLineParts = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         if (mutation.target, mutation.target && "ms-List-surface" === mutation.target.className) {
           for (var elements = document.getElementsByClassName("setNowButton"); 0 < elements.length; ) elements[0].parentNode.removeChild(elements[0]);
@@ -359,7 +359,7 @@ function processData(ob) {
           });
         }
       });
-    }).observe(document.body, {
+    })).observe(document.body, {
       attributes: !0,
       subtree: !0,
       childList: !0,
@@ -381,57 +381,81 @@ function processData(ob) {
           e.target.textContent = "Alarm off in " + hh + "h " + mm + "m " + dif + "s ";
         }, 1e3));
       }
-    })) : (-1 != currentURL.indexOf("outlook.office.com") ? window.onfocus = function() {
-      chrome.storage.local.get([ "searchEmail" ], function(result) {
-        null != result.searchEmail && (document.querySelector("#topSearchInput").value = result.searchEmail, 
-        document.querySelector("#topSearchInput").dispatchEvent(new KeyboardEvent("keydown", {
-          key: "Enter"
-        })), result = new Event("input", {
-          bubbles: !0,
-          cancelable: !0
-        }), document.querySelector("#topSearchInput").dispatchEvent(result), document.querySelector('[data-testid="send-button"]'), 
-        $(".form-inline.navpage-global-search.ng-non-bindable").submit(), chrome.storage.local.remove("searchEmail", function() {}));
-      });
-    } : -1 != currentURL.indexOf("chatgpt.come") || -1 != currentURL.indexOf("sandbox.ai1") ? (document.addEventListener("click", e => {
-      "TEXTAREA" == e.target.nodeName && changeBackground("white");
-    }), leftLineParts = new MutationObserver(mutationsList => {
-      var elements = document.querySelectorAll(".min-h-\\[20px\\].flex.flex-col.items-start.gap-3.whitespace-pre-wrap.break-words.overflow-x-auto");
-      elements[elements.length - 1];
-      for (const mutation of mutationsList) mutation.target, mutation.target;
-    }), rightLineParts = document.querySelector(".react-scroll-to-bottom--css-bvdkg-1n7m0yu"), 
-    leftLineParts.observe(rightLineParts, {
-      attributes: !0,
-      characterData: !0,
-      subtree: !0
-    }), window.addEventListener("message", event => {
-      isTrustedServiceNowOrigin(event.origin) && (texbox.textContent = event.data);
-    })) : -1 != currentURL.indexOf("incident.do") && (window.addEventListener("message1", event => {
-      isTrustedServiceNowOrigin(event.origin) && (texbox.textContent = event.data);
-    }), document.addEventListener("click", e => {
-      var bgColor = window.getComputedStyle(e.target).backgroundColor;
-      if ("rgba(0, 0, 0, 0)" === bgColor && ("DIV" === e.target.nodeName || "TD" === e.target.nodeName || -1 != currentURL.indexOf("testPage"))) {
-        let targetElement = $('textarea[name="incident.short_description"]');
-        null != (targetElement = null != (targetElement = null != (targetElement = null != (targetElement = null != targetElement && 0 !== targetElement.length ? targetElement : $('input[name="incident.short_description"]')) && 0 !== targetElement.length ? targetElement : $('textarea[name="u_incident_task.short_description"]')) && 0 !== targetElement.length ? targetElement : $('textarea[name="sc_task.short_description"]')) && 0 !== targetElement.length ? targetElement : $("#form_main")) && void 0 !== targetElement && (bgColor = targetElement[0].getBoundingClientRect(), 
-        e.clientX < bgColor.left - 20 || e.clientX > bgColor.right) && (delayTimeout ? (tmpAlert("clearing delay timeout"), 
-        clearTimeout(delayTimeout), delayTimeout = null) : chrome.storage.local.get("delayKeyPressAfterReload", function(result) {
-          result.hasOwnProperty("delayKeyPressAfterReload") ? chrome.storage.local.remove("delayKeyPressAfterReload", function() {}) : chrome.runtime.sendMessage({
-            greeting: "closeTab"
-          }, response => {
-            response && response.farewell && response.farewell;
+    }); else {
+      if (-1 != currentURL.indexOf("outlook.office.com")) window.onfocus = function() {
+        chrome.storage.local.get([ "searchEmail" ], function(result) {
+          null != result.searchEmail && (document.querySelector("#topSearchInput").value = result.searchEmail, 
+          document.querySelector("#topSearchInput").dispatchEvent(new KeyboardEvent("keydown", {
+            key: "Enter"
+          })), result = new Event("input", {
+            bubbles: !0,
+            cancelable: !0
+          }), document.querySelector("#topSearchInput").dispatchEvent(result), document.querySelector('[data-testid="send-button"]'), 
+          $(".form-inline.navpage-global-search.ng-non-bindable").submit(), chrome.storage.local.remove("searchEmail", function() {}));
+        });
+      }; else if (-1 != currentURL.indexOf("chatgpt.come") || -1 != currentURL.indexOf("sandbox.ai1")) {
+        document.addEventListener("click", e => {
+          "TEXTAREA" == e.target.nodeName && changeBackground("white");
+        });
+        rightLineParts = new MutationObserver(mutationsList => {
+          var elements = document.querySelectorAll(".min-h-\\[20px\\].flex.flex-col.items-start.gap-3.whitespace-pre-wrap.break-words.overflow-x-auto");
+          elements[elements.length - 1];
+          for (const mutation of mutationsList) mutation.target, mutation.target;
+        }), ob = document.querySelector(".react-scroll-to-bottom--css-bvdkg-1n7m0yu");
+        rightLineParts.observe(ob, {
+          attributes: !0,
+          characterData: !0,
+          subtree: !0
+        }), window.addEventListener("message", event => {
+          isTrustedServiceNowOrigin(event.origin) && (texbox.textContent = event.data);
+        });
+      } else if (-1 != currentURL.indexOf("incident.do")) {
+        leftLineParts = Array.from(document.querySelectorAll("label")).find(el => "Assigned to" === el.textContent.trim());
+        let element = null;
+        leftLineParts && (rightLineParts = leftLineParts.getAttribute("for"), element = document.getElementById(rightLineParts)) && "input" === element.tagName.toLowerCase() && element.value;
+        ob = document.createElement("button");
+        ob.innerText = "Classify Tickets", ob.style.position = "fixed", ob.style.top = "5px", 
+        ob.style.left = "50%", ob.style.transform = "translateX(-50%)", ob.style.padding = "10px 20px", 
+        ob.style.backgroundColor = "#007bff", ob.style.color = "#fff", ob.style.border = "none", 
+        ob.style.borderRadius = "5px", ob.style.cursor = "pointer", ob.style.zIndex = "10000", 
+        ob.onclick = async function() {
+          const sysid = new URLSearchParams(window.location.search).get("sys_id") || "", classificationKey = currentID + "classificationResult", fallbackDescription = "Short description: " + ($('textarea[name="incident.short_description"]').val() || $('input[name="incident.short_description"]').val() || $('textarea[name="u_incident_task.short_description"]').val() || $('textarea[name="sc_task.short_description"]').val() || "") + "\nLong description: " + ($('textarea[name="incident.description"]').val() || $('textarea[name="sc_task.description"]').val() || "");
+          chrome.storage.local.get([ classificationKey, currentID + "description" ], async function(result) {
+            result = await showClassificationDecisionModal(result[classificationKey] || "NA", result[currentID + "description"] || fallbackDescription, classificationKey);
+            if (result && result.action) return "assign" === result.action ? sysid ? void assignClassification(result.shortcut, sysid) : void 0 : void ("remove" === result.action && deleteClassification(classificationKey, null, null));
           });
-        }));
+        }, document.body.appendChild(ob), window.addEventListener("message1", event => {
+          isTrustedServiceNowOrigin(event.origin) && (texbox.textContent = event.data);
+        });
+        document.addEventListener("click", e => {
+          var bgColor = window.getComputedStyle(e.target).backgroundColor;
+          if ("rgba(0, 0, 0, 0)" === bgColor && ("DIV" === e.target.nodeName || "TD" === e.target.nodeName || -1 != currentURL.indexOf("testPage"))) {
+            let targetElement = $('textarea[name="incident.short_description"]');
+            null != (targetElement = null != (targetElement = null != (targetElement = null != (targetElement = null != targetElement && 0 !== targetElement.length ? targetElement : $('input[name="incident.short_description"]')) && 0 !== targetElement.length ? targetElement : $('textarea[name="u_incident_task.short_description"]')) && 0 !== targetElement.length ? targetElement : $('textarea[name="sc_task.short_description"]')) && 0 !== targetElement.length ? targetElement : $("#form_main")) && void 0 !== targetElement && (bgColor = targetElement[0].getBoundingClientRect(), 
+            e.clientX < bgColor.left - 20 || e.clientX > bgColor.right) && (delayTimeout ? (tmpAlert("clearing delay timeout"), 
+            clearTimeout(delayTimeout), delayTimeout = null) : chrome.storage.local.get("delayKeyPressAfterReload", function(result) {
+              result.hasOwnProperty("delayKeyPressAfterReload") ? chrome.storage.local.remove("delayKeyPressAfterReload", function() {}) : chrome.runtime.sendMessage({
+                greeting: "closeTab"
+              }, response => {
+                response && response.farewell && response.farewell;
+              });
+            }));
+          }
+          -1 != e.target.id.indexOf("addhere") ? (bgColor = parseInt(e.target.id.replace(/^addhere/, "")), 
+          hintText.has(bgColor) && (currentText = currentText.substring(0, insertStart + 1) + hintText.get(bgColor), 
+          insertLength = hintText.get(bgColor).length + 1, lastTarget.value = currentText, 
+          updateInsertLength(insertLength)), removeHints(), 0 < hintIndex && (hintIndex = 0, 
+          hintText.clear())) : lastTarget = e.target, isSelfClick || ("TEXTAREA" === e.target.nodeName && "incident.description" != e.target.id ? (selectedText = e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), 
+          changeBackground("white")) : -1 != currentURL.indexOf("incident_do") && "" == $('input[name="sys_display.incident.assigned_to"]').val() || -1 != currentURL.indexOf("incident_task") && "" === $('input[name="sys_display.u_incident_task.assigned_to"]').val() || -1 != currentURL.indexOf("sc_task") && "" === $('input[name="sys_display.sc_task.assigned_to"]').val() ? (changeBackground(urlMap.get("newTicketColor")), 
+          $(".sn-controls.row").show()) : "3" === $('select[name="incident.state"]').val() || "4" == $('select[name="u_incident_task.state"]').val() || "-5" == $('select[name="sc_task.state"]').val() ? changeBackground(urlMap.get("holdTicketColor")) : changeBackground("#FFFFCC"));
+        }), chrome.storage.local.get([ currentID + "draft" ], function(result) {
+          null != result[currentID + "draft"] && (draft = result[currentID + "draft"]), 
+          getFirstName(), greeting = greeting.replace("userFirstName", firstName), 
+          makeDescriptionReadOnly();
+        });
       }
-      -1 != e.target.id.indexOf("addhere") ? (bgColor = parseInt(e.target.id.replace(/^addhere/, "")), 
-      hintText.has(bgColor) && (currentText = currentText.substring(0, insertStart + 1) + hintText.get(bgColor), 
-      insertLength = hintText.get(bgColor).length + 1, lastTarget.value = currentText, 
-      updateInsertLength(insertLength)), removeHints(), 0 < hintIndex && (hintIndex = 0, 
-      hintText.clear())) : lastTarget = e.target, isSelfClick || ("TEXTAREA" === e.target.nodeName && "incident.description" != e.target.id ? (selectedText = e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), 
-      changeBackground("white")) : -1 != currentURL.indexOf("incident_do") && "" == $('input[name="sys_display.incident.assigned_to"]').val() || -1 != currentURL.indexOf("incident_task") && "" === $('input[name="sys_display.u_incident_task.assigned_to"]').val() || -1 != currentURL.indexOf("sc_task") && "" === $('input[name="sys_display.sc_task.assigned_to"]').val() ? (changeBackground(urlMap.get("newTicketColor")), 
-      $(".sn-controls.row").show()) : "3" === $('select[name="incident.state"]').val() || "4" == $('select[name="u_incident_task.state"]').val() || "-5" == $('select[name="sc_task.state"]').val() ? changeBackground(urlMap.get("holdTicketColor")) : changeBackground("#FFFFCC"));
-    }), chrome.storage.local.get([ currentID + "draft" ], function(result) {
-      null != result[currentID + "draft"] && (draft = result[currentID + "draft"]), 
-      getFirstName(), greeting = greeting.replace("userFirstName", firstName), makeDescriptionReadOnly();
-    })), setupKeyDownEventListerner(!1), setupKeyUpEventListerner(!1));
+      setupKeyDownEventListerner(!1), setupKeyUpEventListerner(!1);
+    }
   }
 }
 
@@ -720,71 +744,88 @@ function deleteClassification(key, highlightField, hoverField) {
   hoverField.originalMouseEnter = null);
 }
 
-function showClassificationDecisionModal(classificationResult, description, onAgree, onDisagree, classificationKey) {
-  var existing = document.getElementById("classificationDecisionOverlay");
-  existing && existing.remove();
-  const overlay = document.createElement("div");
-  overlay.id = "classificationDecisionOverlay", overlay.style.position = "fixed", 
-  overlay.style.top = "0", overlay.style.left = "0", overlay.style.width = "120vw", 
-  overlay.style.height = "100vh", overlay.style.backgroundColor = "rgba(0, 0, 0, 0.45)", 
-  overlay.style.zIndex = "2147483647", overlay.style.display = "flex", overlay.style.alignItems = "center", 
-  overlay.style.justifyContent = "center";
-  var existing = document.createElement("div"), title = (existing.style.width = "min(900px, 92vw)", 
-  existing.style.maxHeight = "85vh", existing.style.overflow = "hidden", existing.style.backgroundColor = "#fff", 
-  existing.style.borderRadius = "10px", existing.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.35)", 
-  existing.style.padding = "14px", existing.style.fontFamily = "Arial, sans-serif", 
-  document.createElement("div")), header = (title.style.fontSize = "18px", title.style.fontWeight = "700", 
-  title.style.marginRight = "auto", title.style.marginLeft = "50px", document.createElement("div"));
-  header.style.display = "flex", header.style.justifyContent = "space-between", 
-  header.style.alignItems = "center";
-  const headerActions = document.createElement("div");
-  headerActions.style.display = "flex", headerActions.style.gap = "8px", headerActions.style.alignItems = "center";
-  var body = document.createElement("div"), description = (body.style.whiteSpace = "pre-wrap", 
-  body.style.overflowY = "auto", body.style.maxHeight = "55vh", body.style.border = "1px solid #ddd", 
-  body.style.borderRadius = "8px", body.style.padding = "10px", body.style.lineHeight = "1.35", 
-  body.textContent = "Classification Result:\n" + classificationResult + "\n\nTicket details:\n" + description, 
-  document.createElement("div")), closeBtn = (description.style.display = "flex", 
-  description.style.gap = "8px", description.style.justifyContent = "flex-end", 
-  description.style.marginTop = "12px", document.createElement("button")), removeBtn = (closeBtn.textContent = "Close", 
-  closeBtn.style.padding = "14px 10px", closeBtn.style.minWidth = "64px", closeBtn.style.minHeight = "46px", 
-  closeBtn.style.fontSize = "15px", closeBtn.style.border = "1px solid #999", closeBtn.style.background = "#f6f6f6", 
-  closeBtn.style.cursor = "pointer", document.createElement("button"));
-  removeBtn.textContent = "Remove Classification", removeBtn.style.padding = "14px 10px", 
-  removeBtn.style.minWidth = "64px", removeBtn.style.minHeight = "46px", removeBtn.style.fontSize = "15px", 
-  removeBtn.style.border = "1px solid #999", removeBtn.style.background = "#f6f6f6", 
-  removeBtn.style.cursor = "pointer";
-  function closeModal() {
-    overlay.remove();
-  }
-  closeBtn.addEventListener("click", function() {
-    closeModal();
-  }), removeBtn.addEventListener("click", function() {
-    closeModal(), onDisagree && onDisagree();
-  }), overlay.addEventListener("click", function(e) {
-    e.target === overlay && closeModal();
-  }), existing.addEventListener("mouseleave", function() {
-    closeModal();
-  }), description.appendChild(closeBtn), headerActions.appendChild(closeBtn), headerActions.appendChild(removeBtn);
-  classificationPrompt.split("topics: ")[1].split("; ").forEach(topic => {
-    var topicBtn = document.createElement("button");
-    topicBtn.textContent = topic, topicBtn.style.padding = "14px 10px", topicBtn.style.minWidth = "64px", 
-    topicBtn.style.minHeight = "46px", classificationResult === topic ? (topicBtn.style.border = "1px solid #2a7f62", 
-    topicBtn.style.background = "#2f9e7a", topicBtn.style.color = "#fff") : (topicBtn.style.border = "1px solid #999", 
-    topicBtn.style.background = "#f6f6f6"), topicBtn.addEventListener("click", function() {
-      closeModal();
-      var shortcut = topic.split("(")[1].split(")")[0];
-      "function" == typeof onAgree && onAgree(shortcut);
-    }), headerActions.appendChild(topicBtn);
+function showClassificationDecisionModal(classificationResult, description, classificationKey) {
+  return new Promise(function(resolve) {
+    var existing = document.getElementById("classificationDecisionOverlay");
+    existing && existing.remove();
+    const overlay = document.createElement("div");
+    overlay.id = "classificationDecisionOverlay", overlay.style.position = "fixed", 
+    overlay.style.top = "0", overlay.style.left = "0", overlay.style.width = "120vw", 
+    overlay.style.height = "100vh", overlay.style.backgroundColor = "rgba(0, 0, 0, 0.45)", 
+    overlay.style.zIndex = "2147483647", overlay.style.display = "flex", overlay.style.alignItems = "center", 
+    overlay.style.justifyContent = "center";
+    var existing = document.createElement("div"), title = (existing.style.width = "min(900px, 92vw)", 
+    existing.style.maxHeight = "85vh", existing.style.overflow = "hidden", existing.style.backgroundColor = "#fff", 
+    existing.style.borderRadius = "10px", existing.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.35)", 
+    existing.style.padding = "14px", existing.style.fontFamily = "Arial, sans-serif", 
+    document.createElement("div")), header = (title.style.fontSize = "18px", title.style.fontWeight = "700", 
+    title.style.marginRight = "auto", title.style.marginLeft = "50px", document.createElement("div"));
+    header.style.display = "flex", header.style.justifyContent = "space-between", 
+    header.style.alignItems = "center";
+    const headerActions = document.createElement("div");
+    headerActions.style.display = "flex", headerActions.style.gap = "8px", headerActions.style.alignItems = "center";
+    var body = document.createElement("div"), footer = (body.style.whiteSpace = "pre-wrap", 
+    body.style.overflowY = "auto", body.style.maxHeight = "55vh", body.style.border = "1px solid #ddd", 
+    body.style.borderRadius = "8px", body.style.padding = "10px", body.style.lineHeight = "1.35", 
+    body.textContent = "Classification Result:\n" + classificationResult + "\n\nTicket details:\n" + description, 
+    document.createElement("div")), closeBtn = (footer.style.display = "flex", footer.style.gap = "8px", 
+    footer.style.justifyContent = "flex-end", footer.style.marginTop = "12px", document.createElement("button")), removeBtn = (closeBtn.textContent = "Close", 
+    closeBtn.style.padding = "14px 10px", closeBtn.style.minWidth = "64px", closeBtn.style.minHeight = "46px", 
+    closeBtn.style.fontSize = "15px", closeBtn.style.border = "1px solid #999", 
+    closeBtn.style.background = "#f6f6f6", closeBtn.style.cursor = "pointer", document.createElement("button"));
+    removeBtn.textContent = "Remove Classification", removeBtn.style.padding = "14px 10px", 
+    removeBtn.style.minWidth = "64px", removeBtn.style.minHeight = "46px", removeBtn.style.fontSize = "15px", 
+    removeBtn.style.border = "1px solid #999", removeBtn.style.background = "#f6f6f6", 
+    removeBtn.style.cursor = "pointer";
+    const closeModal = function() {
+      overlay.remove();
+    };
+    let isResolved = !1;
+    function finish(result) {
+      isResolved || (isResolved = !0, closeModal(), resolve(result));
+    }
+    closeBtn.addEventListener("click", function() {
+      finish({
+        action: "close"
+      });
+    }), removeBtn.addEventListener("click", function() {
+      finish({
+        action: "remove"
+      });
+    }), overlay.addEventListener("click", function(e) {
+      e.target === overlay && finish({
+        action: "close"
+      });
+    }), existing.addEventListener("mouseleave", function() {
+      finish({
+        action: "close"
+      });
+    }), footer.appendChild(closeBtn), headerActions.appendChild(closeBtn), headerActions.appendChild(removeBtn);
+    classificationPrompt.split("topics: ")[1].split("; ").forEach(topic => {
+      var topicBtn = document.createElement("button");
+      topicBtn.textContent = topic, topicBtn.style.padding = "14px 10px", topicBtn.style.minWidth = "64px", 
+      topicBtn.style.minHeight = "46px", classificationResult === topic ? (topicBtn.style.border = "1px solid #2a7f62", 
+      topicBtn.style.background = "#2f9e7a", topicBtn.style.color = "#fff") : (topicBtn.style.border = "1px solid #999", 
+      topicBtn.style.background = "#f6f6f6"), topicBtn.addEventListener("click", function() {
+        var shortcut = topic.split("(")[1].split(")")[0];
+        finish({
+          action: "assign",
+          shortcut: shortcut
+        });
+      }), headerActions.appendChild(topicBtn);
+    });
+    const inputField = document.createElement("input");
+    inputField.type = "text", inputField.placeholder = "Type your classification and press Enter...", 
+    inputField.style.width = "100%", inputField.style.padding = "10px", inputField.style.marginTop = "10px", 
+    inputField.style.boxSizing = "border-box", inputField.addEventListener("keydown", function(event) {
+      "Enter" === event.key && (event.preventDefault(), event = inputField.value.trim()) && finish({
+        action: "assign",
+        shortcut: event
+      });
+    }), headerActions.appendChild(inputField), header.appendChild(headerActions), 
+    header.appendChild(title), existing.appendChild(header), existing.appendChild(body), 
+    overlay.appendChild(existing), document.body.appendChild(overlay);
   });
-  const inputField = document.createElement("input");
-  inputField.type = "text", inputField.placeholder = "Type your classification and press Enter...", 
-  inputField.style.width = "100%", inputField.style.padding = "10px", inputField.style.marginTop = "10px", 
-  inputField.style.boxSizing = "border-box", inputField.addEventListener("keydown", function(event) {
-    "Enter" === event.key && (event.preventDefault(), event = inputField.value.trim()) && "function" == typeof onAgree && (closeModal(), 
-    onAgree(event));
-  }), headerActions.appendChild(inputField), header.appendChild(headerActions), 
-  header.appendChild(title), existing.appendChild(header), existing.appendChild(body), 
-  overlay.appendChild(existing), document.body.appendChild(overlay);
 }
 
 async function processIFrame(iframe) {
@@ -823,17 +864,16 @@ async function processIFrame(iframe) {
       }
       const [ color, description, classificationResult ] = await Promise.all([ getFromStorage(ticketID + "color"), getFromStorage(ticketID + "description"), getFromStorage(ticketID + "classificationResult") ]);
       void 0 === color || "green" === color && -1 != $(timePart).text().indexOf(myFirstName) || (ls[i].style.backgroundColor = color);
-      let findmatch = !1;
+      let findmatch = !1, classColor = "rgb(220, 220, 220, 0.5)";
       const fouthField = seconds[classColumn + 1];
       if (void 0 !== classificationResult) {
         var topics = classificationPrompt.split("topics: ")[1].split("; ");
         for (let i = 0; i < topics.length; i++) {
           var topic = topics[i].split(": ")[0];
-          const color = classificationColors[i];
-          if (-1 != classificationResult.toLowerCase().indexOf(topic.toLowerCase())) {
-            findmatch = !0, fouthField.style.color = color;
+          if (classColor = classificationColors[i], -1 != classificationResult.toLowerCase().indexOf(topic.toLowerCase())) {
+            findmatch = !0, fouthField.style.color = classColor;
             const link = fouthField.querySelector("a");
-            link && (link.style.color = color);
+            link && (link.style.color = classColor);
             break;
           }
         }
@@ -844,13 +884,12 @@ async function processIFrame(iframe) {
         link && (link.style.color = "black"), chrome.storage.local.remove(ticketID + "classificationResult", function() {});
       }
       let cfield = seconds[classColumn];
-      cfield.style.backgroundColor = "rgb(220, 220, 220, 0.5)", cfield.style.cursor = "pointer", 
-      cfield.originalClickHandler || (cfield.originalClickHandler = function(ev) {
-        ev.preventDefault(), ev.stopPropagation(), showClassificationDecisionModal(classificationResult, description, function(shortcutSafe) {
-          assignClassification(shortcutSafe, sysid);
-        }, function() {
-          deleteClassification(ticketID + "classificationResult", fouthField, cfield);
-        }, ticketID + "classificationResult");
+      cfield.style.backgroundColor = classColor, cfield.style.textAlign = "center", 
+      cfield.textContent = classificationResult || "NA", cfield.style.cursor = "pointer", 
+      cfield.originalClickHandler || (cfield.originalClickHandler = async function(ev) {
+        ev.preventDefault(), ev.stopPropagation();
+        ev = await showClassificationDecisionModal(classificationResult, description, ticketID + "classificationResult");
+        ev && ev.action && ("assign" === ev.action ? assignClassification(ev.shortcut, sysid) : "remove" === ev.action && deleteClassification(ticketID + "classificationResult", fouthField, cfield));
       }, cfield.addEventListener("click", cfield.originalClickHandler));
     }
     const windowWidth = window.innerWidth, windowHeight = window.innerHeight;

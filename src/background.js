@@ -48,7 +48,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     if (!isTrustedMessageSender(sender)) return sendResponse({
       farewell: "unauthorized sender"
     }), !1;
-    if (sender.tab && -1 !== sender.url.indexOf("service-now.com") && void 0 !== sender.tab.id && (originalTabID = sender.tab.id), 
+    if (!sender.tab || -1 === sender.url.indexOf("service-now.com") && -1 === sender.url.indexOf("github.io") || void 0 === sender.tab.id || (originalTabID = sender.tab.id), 
     "hello" === request.greeting) sendResponse({
       farewell: "goodbye"
     }); else {
