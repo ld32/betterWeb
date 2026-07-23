@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Incident - Mock Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --border: #e4e7ee; }
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: 10px 16px; }
+    .form { max-width: 980px; margin: 12px auto; padding: 0 16px; }
+    .row { display: grid; grid-template-columns: 220px 1fr; gap: 8px 16px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+    label { color: #444; font-size: 13px; }
+    input[type="text"], select, textarea { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; width: 100%; }
+    textarea { min-height: 120px; }
+    .actions { padding: 12px 0; }
+    .actions button { background: #1a73e8; color: #fff; border: 0; padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+    .actions button:hover { background: #1559b2; }
+    .linked { color: #1a73e8; text-decoration: none; }
+
+    /* Activity stream */
+    .sn-controls.row { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+    .sn-controls.row label { font-size: 13px; color: #444; margin: auto 0; }
+    .sn-controls.row select { padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
+
+    .activity-stream { margin-top: 24px; }
+    .activity-stream h3 { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+
+    .h-card.h-card_md.h-card_comments { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; background: #fafafa; }
+    .h-card .card-from  { font-size: 12px; color: #888; display: inline; }
+    .h-card .card-type  { font-size: 12px; font-weight: 600; color: #555; display: inline; margin: 0 4px; }
+    .h-card .card-time  { font-size: 11px; color: #aaa; display: inline; }
+    .h-card .card-body  { font-size: 13px; color: #222; margin-top: 4px; white-space: pre-wrap; }
+    .h-card.system-log { border-color: #ef9a9a; background: #fff5f5; }
+    .h-card.system-log .card-from,
+    .h-card.system-log .card-type,
+    .h-card.system-log .card-time,
+    .h-card.system-log .card-body { color: #b00020; }
+
+    .activity-input { margin-top: 16px; }
+    .activity-input label { font-size: 13px; color: #444; display: block; margin-bottom: 4px; }
+    .activity-input textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; min-height: 80px; }
+
+    .icon-arrow-up::before { content: "\25B2"; margin-right: 6px; }
+    .icon-arrow-down::before { content: "\25BC"; margin-right: 6px; }
+    .empty-space-alert {
+      position: fixed;
+      z-index: 10000;
+      max-width: 360px;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border-radius: 5px;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+    .usage-instruction {
+      max-width: 980px;
+      margin: 12px auto 0;
+      padding: 10px 12px;
+      border: 1px solid #e4e7ee;
+      border-radius: 6px;
+      background: #fffdf2;
+      color: #dc0c0c;
+      font-size: 18px;
+      white-space: pre-line;
+      line-height: 1.45;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body> 
+  <header>
+    <strong id="header_title">Incident</strong>
+    <div style="float:right; display:flex; gap:8px;">
+      <button id="btn_options" type="button" style="background:#fff; border:1px solid #d2d7e3; color:#1a73e8; padding:6px 10px; border-radius:4px; cursor:pointer;">Options</button>
+      <button id="btn_prev_incident" class="icon-arrow-up" type="button" style="background:#fff; border:1px solid #d2d7e3; color:#1a73e8; padding:6px 10px; border-radius:4px; cursor:pointer;">Prev</button>
+      <button id="btn_next_incident" class="icon-arrow-down" type="button" style="background:#fff; border:1px solid #d2d7e3; color:#1a73e8; padding:6px 10px; border-radius:4px; cursor:pointer;">Next</button>
+    </div>
+  </header>
+
+  <div class="usage-instruction">Instruction to use this page:
+1 Click the empty space on left or right side to close the incident.
+2 Press 'c' on your keyboard to close the current incident.
+3 Press 'h' on your keyboard to show helpful shortcuts.
+4 Press 'a' on your keyboard to hide/show less informative web elements.
+5 Press 'd' or 'f' on your keyboard to move between incidents.
+6 Press 's' on your keyboard to save the current incident.
+7 Press 'i' on your keyboard to copy incident ID and link, so that you can paste it elsewhere.
+8 Press 'r' on your keyboard to assigne the ticket to David.
+9 Press 'j' on your keyboard to send me a message 'Just want to follow up ...' the ticket.
+10 Press 'as' on your keyboard to ask sandbox to suggest a solution for the ticket (need to install the extension).
+11 Type "Th' or 'Pl' in Additional comments to see how auto-complete works.
+12 Click the option button on the top menu on to open the options page and edit it to make changes.
+13 8 Click this link to see how to use the BetterWeb extension on real website: <a href="https://github.com/ld32/betterWeb" target="_blank" rel="noopener noreferrer">Better Web Extension Usage</a></div>
+</div>
+
+  <div class="form" style="margin-top:8px;">
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:8px 0; border-bottom:1px solid #e4e7ee;">
+      <span style="font-size:13px; color:#444; font-weight:600;">Logged in as: <span id="logged_in_user">Smith Miller</span></span>
+    </div>
+  </div>
+
+  <div class="form">
+    <div id="form_main">
+      <div class="row">
+        <label for="number">Number</label>
+        <input id="number" type="text" value="INC0000001">
+      </div>
+
+      <div class="row">
+        <label for="incident.state">State</label>
+        <select id="incident.state" name="incident.state">
+          <option value="1">New</option>
+          <option value="2" selected>In Progress</option>
+          <option value="3">On Hold</option>
+          <option value="6">Resolved</option>
+          <option value="7">Closed</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="incident_type">Incident type</label>
+        <input id="incident_type" type="text" value="NA">
+      </div>
+
+      <div class="row">
+        <label for="assignment_group">Assignment group</label>
+        <input id="assignment_group" type="text" value="Service Desk">
+      </div>
+
+      <div class="row">
+        <label for="sys_display.incident.assigned_to">Assigned to</label>
+        <input id="sys_display.incident.assigned_to" name="sys_display.incident.assigned_to" type="text" value="David Dong">
+      </div>
+
+      <div class="row">
+        <label for="caller">Caller</label>
+        <div>
+          <!-- mimic reference link style -->
+          <a class="linked" sys_id="77ad8176731313005754660c4cf6a7de" href="sys_user.do.html?sys_id=77ad8176731313005754660c4cf6a7de">Smith Miller</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="updated_time">Updated time</label>
+        <div id="updated_time">
+          <div class="datex date-calendar" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago" style="display:none">10-26-2025 09:12:00</div>
+          <div class="datex date-calendar-short" title="10-26 09:12" timeago="2025-10-26 09:12:00" timeago-attrs="title" data-original-title="3d ago">10-26 09:12</div>
+          <div class="datex date-timeago" title="10-26-2025 09:12:00" timeago="2025-10-26 09:12:00" data-original-title="10-26-2025 09:12:00" null="3d ago" style="display:none">3d ago</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btn_save">Save</button>
+        <button id="btn_update">Update</button>
+      </div>
+    </div>
+
+    <div id="form_activity">
+    
+    <!-- Activity / conversation log -->
+    <div class="activity-stream">
+      <h3>Activity</h3>
+
+      <!-- "Additional comments" — kept visible by hideAll() -->
+      <!-- childNodes must be adjacent (no whitespace between) so indices match what content.js expects:
+           childNodes[0]=from, childNodes[1]=type, childNodes[2]=time, childNodes[3]=body -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Smith Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-24 08:30:00</div><div class="card-body">Hi, David, I'm unable to log into the portal. Getting an "invalid credentials" error even after resetting my password.</div></div>
+
+      <!-- "Work notes" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-24 09:15:00</div><div class="card-body">Checked AD account — account is not locked. Suspecting a cache issue. Asked user to clear browser cache and retry.</div></div>
+
+      <!-- "System Update" — HIDDEN by hideAll() (not in the allowed types list) -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">System Update</div><div class="card-time">2025-10-24 09:16:00</div><div class="card-body">State changed from New → In Progress by Jane Doe.</div></div>
+
+      <!-- "Additional comments" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Smith Miller</div><div class="card-type">Additional comments</div><div class="card-time">2025-10-25 10:00:00</div><div class="card-body">Cleared the cache but still seeing the same error. Please advise.</div></div>
+
+      <!-- "Email Notification" — HIDDEN by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Email Notification</div><div class="card-time">2025-10-25 10:01:00</div><div class="card-body">Auto-notification sent to Smith Miller: ticket update.</div></div>
+
+      <!-- "Work notes" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">Jane Doe (Agent)</div><div class="card-type">Work notes</div><div class="card-time">2025-10-26 09:00:00</div><div class="card-body">Escalating to L2. Possible backend auth service issue affecting multiple users.</div></div>
+
+      <!-- "Image uploaded" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Attachment uploaded</div><div class="card-time">05-28-2026 12:22:22</div><div class="card-body"><a href="#" class="linked attached-image-toggle">attached image</a><img src="https://1000logos.net/wp-content/uploads/2017/02/Harvard-Logo.png" alt="harvard_logo.png" style="max-width:320px;border-radius:4px;border:1px solid #e4e7ee;display:none;margin-top:4px;"><br>harvard_logo.png</div></div>
+
+      <!-- "Image uploaded" — kept visible by hideAll() -->
+      <div class="h-card h-card_md h-card_comments"><div class="card-from">System</div><div class="card-type">Image uploaded</div><div class="card-time">05-28-2026 12:23:10</div><div class="card-body"><a href="#" class="linked attached-image-toggle">attached image</a><img src="https://placehold.co/320x180?text=network_trace.png" alt="network_trace.png" style="max-width:320px;border-radius:4px;border:1px solid #e4e7ee;display:none;margin-top:4px;"><br>network_trace.png</div></div>
+    </div>
+
+    <!-- Activity input textareas (used by content.js to insert comments) -->
+    <div class="activity-input">
+      <label for="activity-stream-comments-textarea">Additional comments</label>
+      <textarea id="activity-stream-comments-textarea" placeholder="Add a comment visible to the customer..."></textarea>
+    </div>
+    <div class="activity-input">
+      <label for="activity-stream-work_notes-textarea">Work notes</label>
+      <textarea id="activity-stream-work_notes-textarea" placeholder="Add internal work notes..."></textarea>
+    </div>
+
+    </div><!-- #form_activity -->
+  </div><!-- .form -->
+  <script>
+    // Ticket ID from URL ?sys_id= or fall back to the #number field value
+    var pageParams = new URLSearchParams(window.location.search);
+    var ticketId = pageParams.get('sys_id')
+                   || document.getElementById('number').value;
+    var USER_STORAGE_KEY = 'betterWeb_mock_selected_user';
+    var currentUser = 'Smith Miller';
+    var INCIDENT_SEQUENCE = [
+      'INC0000001', 'INC0000002', 'INC0000003', 'INC0000004', 'INC0000005',
+      'INC0000006', 'INC0000007', 'INC0000008', 'INC0000009', 'INC0000010',
+      'INC0000011', 'INC0000012', 'INC0000013', 'INC0000014', 'INC0000015',
+      'INC0000016', 'INC0000017', 'INC0000018', 'INC0000019'
+    ];
+    var STATE_LABELS = {
+      '1': 'New',
+      '2': 'In Progress',
+      '3': 'On Hold',
+      '6': 'Resolved',
+      '7': 'Closed'
+    };
+    var lastFormSnapshot = null;
+    var INCIDENT_SHORT_DESCRIPTIONS = {
+      'INC0000001': 'Login error on portal',
+      'INC0000002': 'Email not syncing',
+      'INC0000003': 'Cannot access VPN',
+      'INC0000004': 'RNA-seq pipeline failing at adapter trimming',
+      'INC0000005': 'GATK variant on hg38 cohort',
+      'INC0000006': 'BLAST taxonomy refresh',
+      'INC0000010': 'Blue screen on startup',
+      'INC0000011': 'Outlook keeps crashing',
+      'INC0000012': 'Unable to connect to SharePoint',
+      'INC0000013': 'Inbound spam flood creating duplicate service tickets'
+    };
+    var INCIDENT_SCENARIOS = {
+      'INC0000001': {
+        shortDescription: 'Login error on portal',
+        incidentType: 'Access',
+        assignmentGroup: 'Service Desk',
+        caller: 'Smith Miller',
+        updatedTime: '10-26-2025 09:12:00',
+        cards: [
+          { from: 'Smith Miller', type: 'Additional comments', time: '2025-10-24 08:30:00', body: 'Unable to log into the portal. I reset my password twice and still get invalid credentials.' },
+          { from: 'Jane Doe (Agent)', type: 'Work notes', time: '2025-10-24 09:15:00', body: 'Account is active in AD and MFA enrollment is valid. Requested browser cache reset and token refresh.' }
+        ]
+      },
+      'INC0000004': {
+        shortDescription: 'RNA-seq pipeline failing at adapter trimming',
+        incidentType: 'Bioinformatics',
+        assignmentGroup: 'Bioinformatics Platform',
+        caller: 'Uma Nash',
+        updatedTime: '10-25-2025 14:00:00',
+        cards: [
+          { from: 'Uma Nash', type: 'Additional comments', time: '2025-10-25 13:25:00', body: 'Our RNA-seq Nextflow run fails in trim_galore with FASTQ format mismatch on sample batch B47.' },
+          { from: 'Bill Richard', type: 'Work notes', time: '2025-10-25 13:52:00', body: 'Validated input files. Two lanes contain truncated reads from transfer interruption. Requested re-upload and checksum verification.' }
+        ]
+      },
+      'INC0000005': {
+        shortDescription: 'GATK variant calling queue stalled on hg38 cohort',
+        incidentType: 'Bioinformatics',
+        assignmentGroup: 'Bioinformatics Platform',
+        caller: 'Victor Owens',
+        updatedTime: '10-25-2025 13:30:00',
+        cards: [
+          { from: 'Victor Owens', type: 'Additional comments', time: '2025-10-25 12:48:00', body: 'Joint genotyping for 124 exomes has been pending for 9 hours; no new VCF chunks are being produced.' },
+          { from: 'Bill Richard', type: 'Work notes', time: '2025-10-25 13:10:00', body: 'Worker pool saturated due to oversized scatter count. Reduced shard size and restarted stage from GenomicsDBImport checkpoint.' }
+        ]
+      },
+      'INC0000006': {
+        shortDescription: 'BLAST taxonomy mapping mismatch after database refresh',
+        incidentType: 'Bioinformatics',
+        assignmentGroup: 'Bioinformatics Platform',
+        caller: 'Wendy Park',
+        updatedTime: '10-25-2025 12:00:00',
+        cards: [
+          { from: 'Wendy Park', type: 'Additional comments', time: '2025-10-25 11:22:00', body: 'BLAST hits now map several bacterial contigs to wrong taxonomy IDs after last night database sync.' },
+          { from: 'Bill Richard', type: 'Work notes', time: '2025-10-25 11:40:00', body: 'Detected mixed index versions between nt and taxdb. Rebuilt indices with aligned release tags and re-ran validation panel.' }
+        ]
+      },
+      'INC0000012': {
+        shortDescription: 'Spam campaign sent from compromised mailbox',
+        incidentType: 'Spam',
+        assignmentGroup: 'Security Operations',
+        caller: 'Clara Vance',
+        updatedTime: '10-24-2025 12:00:00',
+        cards: [
+          { from: 'Clara Vance', type: 'Additional comments', time: '2025-10-24 11:18:00', body: 'Contacts reported phishing emails from my account with a fake OneDrive link. I did not send those messages.' },
+          { from: 'Rich Goodman', type: 'Work notes', time: '2025-10-24 11:33:00', body: 'Forced password reset, revoked active sessions, blocked sender patterns, and submitted malicious URL for tenant-wide block.' }
+        ]
+      },
+      'INC0000013': {
+        shortDescription: 'Inbound spam flood creating duplicate service tickets',
+        incidentType: 'Spam',
+        assignmentGroup: 'Security Operations',
+        caller: 'Derek West',
+        updatedTime: '10-24-2025 11:00:00',
+        cards: [
+          { from: 'Derek West', type: 'Additional comments', time: '2025-10-24 10:26:00', body: 'Mailbox received ~400 spam emails in 15 minutes and auto-forward rules generated duplicate incident submissions.' },
+          { from: 'Rich Goodman', type: 'Work notes', time: '2025-10-24 10:41:00', body: 'Enabled anti-spam strict policy, removed malicious transport rule, and added suppression for duplicate auto-ticket events.' }
+        ]
+      }
+    };
+
+    function getSelectedUserProfile() {
+      try {
+        var raw = localStorage.getItem(USER_STORAGE_KEY);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        if (!parsed || !parsed.name) return null;
+        return parsed;
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function applySelectedUserProfile() {
+      var selected = getSelectedUserProfile();
+      if (!selected) return;
+      currentUser = selected.name;
+      var userNode = document.getElementById('logged_in_user');
+      if (userNode) {
+        userNode.textContent = selected.name;
+      }
+      var assignedToInput = document.getElementById('sys_display.incident.assigned_to');
+      if (assignedToInput) {
+        assignedToInput.value = selected.name;
+      }
+    }
+
+    function hideShortcutHoverAlert() {
+      var existingAlert = document.getElementById('shortcut-hover-alert');
+      if (existingAlert) existingAlert.remove();
+      if (shortcutHoverMoveListenerAttachTimeout) {
+        clearTimeout(shortcutHoverMoveListenerAttachTimeout);
+        shortcutHoverMoveListenerAttachTimeout = null;
+      }
+      if (shortcutHoverMoveHandler) {
+        document.removeEventListener('mousemove', shortcutHoverMoveHandler, true);
+        shortcutHoverMoveHandler = null;
+      }
+    }
+
+    function showShortcutHoverAlert(event) {
+      hideShortcutHoverAlert();
+      var initialX = event && typeof event.clientX === 'number' ? event.clientX : 20;
+      var initialY = event && typeof event.clientY === 'number' ? event.clientY : 20;
+
+      var alertElement = document.createElement('div');
+      alertElement.id = 'shortcut-hover-alert';
+      alertElement.className = 'empty-space-alert';
+      alertElement.setAttribute('role', 'status');
+      alertElement.textContent = 'type shortcut, for example "tr", "tm" or "Th" to quickly imput text. And move mouse away and type hotkeys, such as "h" for help, "a" to hide/show less infomative web elements, or "br" to bookmark with red color, or "c" to close the tab.';
+      document.body.appendChild(alertElement);
+
+      var bounds = alertElement.getBoundingClientRect();
+      var mouseX = event && typeof event.clientX === 'number' ? event.clientX : 20;
+      var mouseY = event && typeof event.clientY === 'number' ? event.clientY : 20;
+      var left = Math.max(8, Math.min(mouseX + 14, window.innerWidth - bounds.width - 8));
+      var top = mouseY + bounds.height + 14 <= window.innerHeight
+        ? mouseY + 14
+        : Math.max(8, mouseY - bounds.height - 14);
+      alertElement.style.left = left + 'px';
+      alertElement.style.top = top + 'px';
+
+      shortcutHoverMoveHandler = function(moveEvent) {
+        var deltaX = Math.abs(moveEvent.clientX - initialX);
+        var deltaY = Math.abs(moveEvent.clientY - initialY);
+        if (deltaX + deltaY < 2) return;
+        hideShortcutHoverAlert();
+      };
+      shortcutHoverMoveListenerAttachTimeout = setTimeout(function() {
+        if (!shortcutHoverMoveHandler) return;
+        document.addEventListener('mousemove', shortcutHoverMoveHandler, true);
+        shortcutHoverMoveListenerAttachTimeout = null;
+      }, shortcutHoverMoveDetectDelayMs);
+    }
+
+    function bindShortcutHover(node) {
+      if (!node || node.dataset.shortcutHoverBound === '1') return;
+      node.dataset.shortcutHoverBound = '1';
+      node.addEventListener('mouseenter', showShortcutHoverAlert);
+      node.addEventListener('mouseleave', hideShortcutHoverAlert);
+    }
+
+    function setupActivityShortcutTooltip() {
+      return;
+    }
+
+    function nowString() {
+      var d = new Date();
+      var pad = function(n) { return String(n).padStart(2, '0'); };
+      return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+             ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+
+    function addCard(from, type, body, time) {
+      var card = document.createElement('div');
+      card.className = 'h-card h-card_md h-card_comments';
+      if (isSystemActivityType(type)) card.classList.add('system-log');
+      // No whitespace between child divs — required by content.js childNodes indexing
+      card.innerHTML =
+        '<div class="card-from">' + from + '</div>' +
+        '<div class="card-type">' + type + '</div>' +
+        '<div class="card-time">' + (time || nowString()) + '</div>' +
+        '<div class="card-body">' + body + '</div>';
+      document.querySelector('.activity-stream').appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function addSeedCard(from, type, body, time) {
+      var card = document.createElement('div');
+      card.className = 'h-card h-card_md h-card_comments';
+      if (isSystemActivityType(type)) card.classList.add('system-log');
+      card.innerHTML =
+        '<div class="card-from">' + from + '</div>' +
+        '<div class="card-type">' + type + '</div>' +
+        '<div class="card-time">' + (time || nowString()) + '</div>' +
+        '<div class="card-body">' + body + '</div>';
+      document.querySelector('.activity-stream').appendChild(card);
+    }
+
+    function isSystemActivityType(type) {
+      var normalized = (type || '').toLowerCase();
+      return normalized.indexOf('system') !== -1 || normalized.indexOf('notification') !== -1;
+    }
+
+    function applySystemLogStyleToExistingCards() {
+      var cards = document.querySelectorAll('.activity-stream .h-card.h-card_md.h-card_comments');
+      cards.forEach(function(card) {
+        var typeEl = card.querySelector('.card-type');
+        var typeText = typeEl ? typeEl.textContent.trim() : '';
+        if (isSystemActivityType(typeText)) card.classList.add('system-log');
+      });
+    }
+
+    function setUpdatedTime(ts) {
+      var shortValue = ts;
+      var shortMatch = ts.match(/^\d{4}-(\d{2}-\d{2}) (\d{2}:\d{2})/);
+      if (shortMatch) shortValue = shortMatch[1] + ' ' + shortMatch[2];
+      var calendar = document.querySelector('#updated_time .date-calendar');
+      var shortCal = document.querySelector('#updated_time .date-calendar-short');
+      var timeago = document.querySelector('#updated_time .date-timeago');
+      if (calendar) calendar.textContent = ts;
+      if (shortCal) shortCal.textContent = shortValue;
+      if (timeago) timeago.textContent = 'just now';
+    }
+
+    function getCurrentStateLabel() {
+      var stateSelect = document.getElementById('incident.state');
+      if (!stateSelect) return '';
+      var selectedOption = stateSelect.options[stateSelect.selectedIndex];
+      return selectedOption ? selectedOption.textContent.trim() : (STATE_LABELS[stateSelect.value] || '');
+    }
+
+    function captureFormSnapshot() {
+      var incidentTypeInput = document.getElementById('incident_type');
+      var assignmentInput = document.getElementById('assignment_group');
+      var stateSelect = document.getElementById('incident.state');
+      return {
+        stateValue: stateSelect ? stateSelect.value : '',
+        stateLabel: getCurrentStateLabel(),
+        incidentType: incidentTypeInput ? incidentTypeInput.value.trim() : '',
+        assignmentGroup: assignmentInput ? assignmentInput.value.trim() : ''
+      };
+    }
+
+    function getSystemChangeMessages(beforeSnapshot, afterSnapshot, actorName) {
+      var messages = [];
+      var actor = actorName || 'System';
+
+      if (beforeSnapshot.stateValue !== afterSnapshot.stateValue) {
+        messages.push('State changed from ' + beforeSnapshot.stateLabel + ' to ' + afterSnapshot.stateLabel + ' by ' + actor + '.');
+      }
+      if (beforeSnapshot.assignmentGroup !== afterSnapshot.assignmentGroup) {
+        messages.push('Assignment group changed from "' + beforeSnapshot.assignmentGroup + '" to "' + afterSnapshot.assignmentGroup + '" by ' + actor + '.');
+      }
+      if (beforeSnapshot.incidentType !== afterSnapshot.incidentType) {
+        messages.push('Incident type changed from "' + beforeSnapshot.incidentType + '" to "' + afterSnapshot.incidentType + '" by ' + actor + '.');
+      }
+
+      return messages;
+    }
+
+    function addSystemLog(message, time) {
+      addCard('System', 'System Log', message, time);
+      persistComment('System', 'System Log', message, time);
+    }
+
+    function addPerMessageEmailLog(messageType, actorName, time) {
+      addSystemLog('Email sent: ' + messageType + ' update from ' + actorName + ' was delivered to ticket subscribers.', time);
+    }
+
+    function applyScenario() {
+      var scenario = INCIDENT_SCENARIOS[ticketId];
+      if (!scenario) return;
+
+      document.getElementById('incident_type').value = scenario.incidentType;
+      document.getElementById('assignment_group').value = scenario.assignmentGroup;
+      var callerAnchor = document.querySelector('label[for="caller"]').closest('.row').querySelector('a.linked');
+      if (callerAnchor) callerAnchor.textContent = scenario.caller;
+      if (scenario.updatedTime) setUpdatedTime(scenario.updatedTime);
+
+      var stream = document.querySelector('.activity-stream');
+      var cards = stream.querySelectorAll('.h-card.h-card_md.h-card_comments');
+      cards.forEach(function(card) { card.remove(); });
+      (scenario.cards || []).forEach(function(card) {
+        addSeedCard(card.from, card.type, card.body, card.time);
+      });
+    }
+
+    function setupIncidentNavigation() {
+      var prevBtn = document.getElementById('btn_prev_incident');
+      var nextBtn = document.getElementById('btn_next_incident');
+      var currentIndex = INCIDENT_SEQUENCE.indexOf(ticketId);
+
+      if (currentIndex === -1) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        prevBtn.style.opacity = '0.5';
+        nextBtn.style.opacity = '0.5';
+        prevBtn.style.cursor = 'not-allowed';
+        nextBtn.style.cursor = 'not-allowed';
+        return;
+      }
+
+      var prevId = currentIndex > 0 ? INCIDENT_SEQUENCE[currentIndex - 1] : '';
+      var nextId = currentIndex < INCIDENT_SEQUENCE.length - 1 ? INCIDENT_SEQUENCE[currentIndex + 1] : '';
+
+      prevBtn.disabled = !prevId;
+      nextBtn.disabled = !nextId;
+      if (!prevId) {
+        prevBtn.style.opacity = '0.5';
+        prevBtn.style.cursor = 'not-allowed';
+      }
+      if (!nextId) {
+        nextBtn.style.opacity = '0.5';
+        nextBtn.style.cursor = 'not-allowed';
+      }
+
+      prevBtn.addEventListener('click', function() {
+        if (!prevId) return;
+        window.location.href = 'incident.do.html?sys_id=' + prevId;
+      });
+      nextBtn.addEventListener('click', function() {
+        if (!nextId) return;
+        window.location.href = 'incident.do.html?sys_id=' + nextId;
+      });
+    }
+
+    function persistComment(from, type, body, time) {
+      var key = 'betterWeb_comments_' + ticketId;
+      var comments = JSON.parse(localStorage.getItem(key) || '[]');
+      comments.push({ from: from, type: type, body: body, time: time });
+      localStorage.setItem(key, JSON.stringify(comments));
+      // Record who last updated this ticket so the list page can reflect it
+      localStorage.setItem('betterWeb_lastUpdate_' + ticketId, JSON.stringify({ by: from, time: time }));
+    }
+
+    function loadPersistedComments() {
+      var key = 'betterWeb_comments_' + ticketId;
+      var comments = JSON.parse(localStorage.getItem(key) || '[]');
+      comments.forEach(function(c) { addCard(c.from, c.type, c.body, c.time); });
+    }
+
+    function injectFirstCommentPreview() {
+      var stream = document.querySelector('.activity-stream');
+      var firstCard = stream ? stream.querySelector('.h-card.h-card_md.h-card_comments') : null;
+      if (!stream || !firstCard) return;
+
+      var firstBody = firstCard.querySelector('.card-body');
+      var firstText = firstBody ? firstBody.textContent.trim() : '';
+
+      var previewWrap = document.createElement('div');
+      previewWrap.id = 'incident.short_description';
+      previewWrap.style.border = '1px solid #e4e7ee';
+      previewWrap.style.background = '#fff3f3';
+      previewWrap.style.padding = '8px 10px';
+      previewWrap.style.marginBottom = '8px';
+      previewWrap.style.borderRadius = '6px';
+
+      var previewLabel = document.createElement('label');
+      previewLabel.textContent = 'Short description';
+      previewLabel.style.display = 'block';
+      previewLabel.style.fontSize = '13px';
+      previewLabel.style.color = '#444';
+      previewLabel.style.marginBottom = '4px';
+
+      var previewTextField = document.createElement('input');
+      previewTextField.type = 'text';
+      previewTextField.name = 'incident.short_description';
+      var scenario = INCIDENT_SCENARIOS[ticketId];
+      previewTextField.value = INCIDENT_SHORT_DESCRIPTIONS[ticketId] || (scenario && scenario.shortDescription) || firstText;
+      previewTextField.readOnly = true;
+      previewTextField.style.width = '100%';
+      previewTextField.style.border = '1px solid #e4e7ee';
+      previewTextField.style.background = '#fff';
+
+      previewWrap.appendChild(previewLabel);
+      previewWrap.appendChild(previewTextField);
+      stream.parentNode.insertBefore(previewWrap, stream);
+
+      var activityInputs = Array.from(document.querySelectorAll('.activity-input'));
+      activityInputs.forEach(function (inputBlock) {
+        stream.parentNode.insertBefore(inputBlock, stream);
+      });
+    }
+
+    // Set header title and page title dynamically
+    document.getElementById('number').value = ticketId;
+    document.getElementById('header_title').textContent = 'Incident ' + ticketId;
+    document.title = ticketId;
+
+    applyScenario();
+    applySelectedUserProfile();
+    setupIncidentNavigation();
+    setupActivityShortcutTooltip();
+    document.getElementById('btn_options').addEventListener('click', function() {
+      window.open('options.html', '_blank');
+    });
+
+    // Replay saved comments when page loads
+    loadPersistedComments();
+    applySystemLogStyleToExistingCards();
+    injectFirstCommentPreview();
+    lastFormSnapshot = captureFormSnapshot();
+
+    function postFromActivityInputs(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var beforeSnapshot = lastFormSnapshot || captureFormSnapshot();
+      var commentsTextarea = document.getElementById('activity-stream-comments-textarea');
+      var workNotesTextarea = document.getElementById('activity-stream-work_notes-textarea');
+      var commentsText = commentsTextarea.value.trim();
+      var workNotesText = workNotesTextarea.value.trim();
+      var afterSnapshot = captureFormSnapshot();
+      var systemMessages = getSystemChangeMessages(beforeSnapshot, afterSnapshot, currentUser);
+      if (!commentsText && !workNotesText && !systemMessages.length) return;
+
+      var time = nowString();
+      if (commentsText) {
+        addCard(currentUser, 'Additional comments', commentsText, time);
+        persistComment(currentUser, 'Additional comments', commentsText, time);
+        addPerMessageEmailLog('Additional comments', currentUser, time);
+        commentsTextarea.value = '';
+      }
+      if (workNotesText) {
+        addCard(currentUser, 'Work notes', workNotesText, time);
+        persistComment(currentUser, 'Work notes', workNotesText, time);
+        addPerMessageEmailLog('Work notes', currentUser, time);
+        workNotesTextarea.value = '';
+      }
+      systemMessages.forEach(function(message) {
+        addSystemLog(message, time);
+      });
+      lastFormSnapshot = afterSnapshot;
+    }
+
+    document.getElementById('btn_save').addEventListener('click', postFromActivityInputs);
+    document.getElementById('btn_update').addEventListener('click', postFromActivityInputs);
+
+    // Toggle attached images
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('attached-image-toggle')) {
+        e.preventDefault();
+        var img = e.target.nextElementSibling;
+        img.style.display = img.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    var shortcutHoverMoveDetectDelayMs = 600;
+    var emptySpaceAlertTimer;
+    var shortcutHoverMoveHandler;
+    var shortcutHoverMoveListenerAttachTimeout;
+    var pointerIsInSideGutter = false;
+
+    function showEmptySpaceAlert(event) {
+      return;
+    }
+
+    document.addEventListener('mousemove', function(event) {
+      var form = document.querySelector('.form');
+      if (!form) return;
+
+      var formBounds = form.getBoundingClientRect();
+      var isOutsideFormWidth = event.clientX < formBounds.left || event.clientX > formBounds.right;
+      var isInSideGutter = isOutsideFormWidth && !event.target.closest('header');
+
+      if (isInSideGutter && !pointerIsInSideGutter) {
+        showEmptySpaceAlert(event);
+      }
+      pointerIsInSideGutter = isInSideGutter;
+    });
+  </script>
+  <script src="mockExtensionBootstrap.js"></script>
+</html>

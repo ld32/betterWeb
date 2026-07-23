@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Better Web Mock Options</title>
+  <style>
+    ul {
+      height: 100%;
+      width: 800vw;
+      overflow: auto;
+      border: 0;
+      border-radius: 2px;
+      display: inline-block;
+      padding: 2px;
+      margin: 1px;
+    }
+
+    li {
+      color: blue;
+      cursor: pointer;
+    }
+
+    td {
+      vertical-align: top;
+      text-align: center;
+    }
+
+    td a {
+      padding: 0 10px;
+      word-wrap: normal;
+      display: inline-block;
+    }
+
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+    }
+
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+    }
+
+    .tab button:hover {
+      background-color: #ddd;
+    }
+
+    .tab button.active {
+      background-color: #ccc;
+    }
+
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+
+    .editor {
+      overflow: auto;
+      display: none;
+      padding: 0%;
+    }
+
+    div.editor {
+      outline: 0 solid transparent;
+      height: 100%;
+    }
+
+    .active {
+      display: inline-block !important;
+    }
+
+    .popup {
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .button-delete {
+      vertical-align: top;
+    }
+
+    .textarea {
+      width: 70%;
+      box-sizing: border-box;
+    }
+
+    .textarea-shortcut {
+      width: 20%;
+      padding: 1px;
+      box-sizing: border-box;
+    }
+
+    .textarea-shortcut textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .textarea textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .table-btn {
+      width: 5%;
+      vertical-align: top;
+    }
+
+    .url-link-preview {
+      min-width: 52px;
+      text-align: left;
+      line-height: 1.1;
+    }
+
+    .url-link-preview a {
+      display: inline-block;
+      margin: 0 4px 2px 0;
+      padding: 0 4px;
+      font-size: 11px;
+      line-height: 1.15;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      text-decoration: none;
+    }
+
+    @keyframes betterWebSpin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="popup" id="popup"></div>
+  <script src="mockExtensionBootstrap.js"></script>
+  <script src="../src/options.js"></script>
+</body>
+</html>

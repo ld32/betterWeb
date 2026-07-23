@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Better Web Test - ServiceNow Mock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { background: #1a73e8; color: #fff; padding: 10px 16px; font-weight: 600; }
+    .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    nav { background: #f5f7fb; border-right: 1px solid #e4e7ee; padding: 12px; }
+    nav h3 { font-size: 14px; margin: 8px 0; color: #333; }
+    nav a { display: block; color: #1a73e8; text-decoration: none; padding: 6px 4px; border-radius: 4px; font-size: 14px; }
+    nav a:hover { background: #eaf1fe; }
+    .user-switcher { margin-top: 10px; }
+    .user-switcher-title { font-size: 12px; color: #444; margin: 8px 0 6px; }
+    .user-switcher-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .user-switcher-btn {
+      border: 1px solid #d2d7e3;
+      background: #fff;
+      color: #1a73e8;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .user-switcher-btn.active {
+      background: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+    }
+    main { position: relative; padding: 16px; }
+    #gsft_main { width: 100%; height: calc(100vh - 48px); border: 0; }
+    .hint { font-size: 12px; color: #666; margin-top: 8px; }
+    .usage-instruction {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e4e7ee;
+      border-radius: 6px;
+      background: #fffdf2;
+      color: #dc0c0c;
+      font-size: 18px;
+      white-space: pre-line;
+      line-height: 1.45;
+    }
+    
+    /* Table styles for wider fields */
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { border-bottom: 1px solid #eef1f6; padding: 12px 16px; text-align: left; }
+    th { background: #f7f9fc; font-weight: 600; white-space: nowrap; }
+    td { min-width: 100px; }
+    tr:hover { background: #fbfdff; }
+    .vt { vertical-align: top; }
+    .linked { color: #1a73e8; text-decoration: none; }
+    .linked:hover { text-decoration: underline; }
+    .formlink { text-decoration: none; }
+    .row-hover-alert {
+      position: fixed;
+      z-index: 10000;
+      max-width: 520px;
+      box-sizing: border-box;
+      padding: 14px 16px;
+      border-radius: 5px;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Specific column widths for better spacing */
+    /* Tighten gap between first (#) and second (blank) column */
+    th:nth-child(1), td:nth-child(1) { width: 6px; text-align: center; padding-right: 0px; } /* # */
+    th:nth-child(2), td:nth-child(2) { width: 8px; padding-left: 0; padding-right: 0; } /* empty */
+    th:nth-child(3), td:nth-child(3) { width: 120px; } /* Number */
+    th:nth-child(4), td:nth-child(4) { width: 250px; } /* Short description */
+    th:nth-child(5), td:nth-child(5) { width: 150px; } /* Updated by */
+    th:nth-child(6), td:nth-child(6) { width: 150px; } /* Assigned to */
+    th:nth-child(7), td:nth-child(7) { width: 150px; } /* Caller */
+    th:nth-child(8), td:nth-child(8) { width: 120px; } /* Updated */
+  </style>
+</head>
+<body>
+  <header>ServiceNow Mock — Better Web Testing</header>
+  <div class="app">
+    <nav>
+      <h3>Navigation</h3>
+        <a href="?view=new">New Tickets</a>
+        <a href="?view=my">My Tickets</a>
+        <a href="options.html" target="_blank" rel="noopener noreferrer">Options</a>
+        <div class="user-switcher">
+          <div class="user-switcher-title">Logged in as: <span id="selected_user_name">Smith Miller</span></div>
+          <div class="user-switcher-row">
+            <button class="user-switcher-btn" data-user="david" type="button">David</button>
+            <button class="user-switcher-btn" data-user="smith" type="button">Smith</button>
+            <button class="user-switcher-btn" data-user="bob" type="button">Bob</button>
+          </div>
+        </div>
+
+      <div class="hint">Links load into the main iframe like ServiceNow.</div>
+    </nav>
+    <main>
+      <!-- Content area: will be replaced by an iframe when running on file:// -->
+        <div id="main_content" aria-live="polite"></div>
+    </main>
+  </div>
+  <script>
+    (function () {
+        const USER_STORAGE_KEY = 'betterWeb_mock_selected_user';
+        const USER_PROFILES = {
+          david: { key: 'david', name: 'James Miller', firstName: 'James', id: 'james' },
+          smith: { key: 'smith', name: 'Smith Miller', firstName: 'Smith', id: 'smith' },
+          bob: { key: 'bob', name: 'Bob', firstName: 'Bob', id: 'bob' }
+        };
+
+        function getSelectedUserProfile() {
+          try {
+            var raw = localStorage.getItem(USER_STORAGE_KEY);
+            if (!raw) return USER_PROFILES.smith;
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.key && USER_PROFILES[parsed.key]) {
+              return USER_PROFILES[parsed.key];
+            }
+          } catch (_error) {}
+          return USER_PROFILES.smith;
+        }
+
+        function saveSelectedUserProfile(profile) {
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(profile));
+        }
+
+        function renderSelectedUser(profile) {
+          var nameNode = document.getElementById('selected_user_name');
+          if (nameNode) nameNode.textContent = profile.name;
+          document.querySelectorAll('.user-switcher-btn').forEach(function (button) {
+            button.classList.toggle('active', button.getAttribute('data-user') === profile.key);
+          });
+        }
+
+        function setupUserSwitcher() {
+          var selectedProfile = getSelectedUserProfile();
+          renderSelectedUser(selectedProfile);
+          document.querySelectorAll('.user-switcher-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+              var key = button.getAttribute('data-user');
+              var profile = USER_PROFILES[key];
+              if (!profile) return;
+              saveSelectedUserProfile(profile);
+              renderSelectedUser(profile);
+              var mainContent = document.getElementById('main_content');
+              if (mainContent) {
+                const data = ticketData[viewType] || ticketData.new;
+                const sortedData = data.slice().sort((a, b) => {
+                  const aNum = parseInt(String(a.num || '').replace(/\D/g, ''), 10) || 0;
+                  const bNum = parseInt(String(b.num || '').replace(/\D/g, ''), 10) || 0;
+                  return aNum - bNum;
+                });
+                mainContent.innerHTML = generateTable(sortedData);
+              }
+            });
+          });
+        }
+
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewType = urlParams.get('view') || 'new'; // default to 'new' tickets
+
+        // Data for different views
+        const ticketData = {
+          new: [
+            { num: 'INC0000004', desc: 'Password reset request', updatedBy: 'System Admin', group: '', caller: 'Emma Wilson', time: '10-27 11:30', timeago: '1h ago', state: 'New' },
+            { num: 'INC0000005', desc: 'Software installation needed', updatedBy: 'Help Desk', group: '', caller: 'James Brown', time: '10-27 10:15', timeago: '2h ago', state: 'New' },
+            { num: 'INC0000006', desc: 'Network printer offline', updatedBy: 'IT Support', group: '', caller: 'Sarah Davis', time: '10-27 09:45', timeago: '3h ago', state: 'New' },
+            { num: 'INC0000010', desc: 'Blue screen on startup', updatedBy: 'System Admin', group: '', caller: 'Tom Baker', time: '10-27 08:30', timeago: '4h ago', state: 'New' },
+            { num: 'INC0000011', desc: 'Outlook keeps crashing', updatedBy: 'Help Desk', group: '', caller: 'Linda Chen', time: '10-27 08:00', timeago: '5h ago', state: 'New' },
+            { num: 'INC0000012', desc: 'Unable to connect to SharePoint', updatedBy: 'IT Support', group: '', caller: 'Mark Evans', time: '10-27 07:45', timeago: '5h ago', state: 'New' },
+          ],
+          my: [
+            { num: 'INC0000001', desc: 'Login error on portal', updatedBy: 'David Dong', group: 'Service Desk', caller: 'Smith Miller', time: '10-26 09:12', timeago: '3d ago', state: 'Assigned' },
+            { num: 'INC0000002', desc: 'Email not syncing', updatedBy: 'David Dong', group: 'Messaging', caller: 'Alice Johnson', time: '10-26 10:02', timeago: '3d ago', state: 'On Hold' },
+            { num: 'INC0000003', desc: 'Cannot access VPN', updatedBy: 'David Dong', group: 'Network', caller: 'Bob Smith', time: '10-26 08:45', timeago: '3d ago', state: 'Resolved' },
+            { num: 'INC0000004', desc: 'RNA-seq pipeline failing at adapter trimming', updatedBy: 'David Dong', group: 'Bioinformatics Platform', caller: 'Uma Nash', time: '10-25 14:00', timeago: '4d ago', state: 'Assigned' },
+            { num: 'INC0000005', desc: 'GATK variant on hg38 cohort', updatedBy: 'Bill Richard', group: 'Bioinformatics Platform', caller: 'Victor Owens', time: '10-25 13:30', timeago: '4d ago', state: 'In Progress' },
+            { num: 'INC0000006', desc: 'BLAST taxonomy refresh', updatedBy: 'David Dong', group: 'Bioinformatics Platform', caller: 'Wendy Park', time: '10-25 12:00', timeago: '4d ago', state: 'On Hold' },
+          ]
+        };
+
+        // Format "2026-05-30 14:23:45" -> "05-30 14:23" to match list column style
+        function fmtStoredTime(t) {
+          var m = t.match(/^\d{4}-(\d{2}-\d{2}) (\d{2}:\d{2})/);
+          return m ? m[1] + ' ' + m[2] : t;
+        }
+
+        function generateTable(data) {
+          const selectedProfile = getSelectedUserProfile();
+          const rows = data.map((ticket, idx) => {
+            // Pull any locally-saved "last update" for this ticket
+            const stored = JSON.parse(localStorage.getItem('betterWeb_lastUpdate_' + ticket.num) || 'null');
+            const updatedBy = stored ? stored.by : ticket.updatedBy;
+            const dispTime  = stored ? fmtStoredTime(stored.time) : ticket.time;
+            const timeago   = stored ? 'just now' : ticket.timeago;
+            const assignedTo = viewType === 'new' ? '' : selectedProfile.name;
+            return `
+            <tr>
+              <td class="vt">NA</td>
+              <td class="vt"></td>
+              <td class="vt">
+                  <a class="linked formlink" href="incident.do.html?sys_id=${ticket.num}"
+                   aria-label="Open record: ${ticket.num}">${ticket.num}</a>
+              </td>
+              <td class="vt">${ticket.desc}</td>
+              <td class="vt">${ticket.state}</td>
+              <td class="vt"><a class="linked" sys_id="user${idx}" href="sys_user.do.html?sys_id=user${idx}">${updatedBy}</a></td>
+              <td class="vt">${assignedTo}</td>
+              <td class="vt"><a class="linked" sys_id="caller${idx}" href="sys_user.do.html?sys_id=caller${idx}">${ticket.caller}</a></td>
+              <td class="vt">
+                <div class="datex date-calendar-short" title="${dispTime}" timeago="${dispTime}"
+                     timeago-attrs="title" data-original-title="${timeago}">${dispTime}</div>
+                <div class="datex date-timeago" title="${dispTime}" timeago="${dispTime}"
+                     data-original-title="${dispTime}" null="${timeago}">${timeago}</div>
+              </td>
+            </tr>
+          `;
+          }).join('');
+
+          return `
+            <div class="usage-instruction">Instruction to use this page:
+1 Click the area between the yellow lines to open new incident list.
+2 Click the area to the right of the second line to open tickets assigned to David.
+3 Click the area to the left of the first line to open tickets in that row.
+4 Incident ID will change color for the day after clicking, until someone else replies.
+5 Updated by column will be red if the incident was not updated by David.
+6 Click the "Classify Ticket" button to classify the first 5 NA incidents.
+7 Click the option button on the side menu to open the options page in a new tab.
+8 Click this link to see how to use the BetterWeb extension on real website: <a href="https://github.com/ld32/betterWeb" target="_blank" rel="noopener noreferrer">Better Web Extension Usage</a></div>
+</div>
+            <table role="grid" aria-label="incident list">
+              <thead>
+                <tr>
+                  <th name="incident_type">Incident type</th>
+                  <th></th>
+                  <th>Number</th>
+                  <th>Short description</th>
+                  <th>State</th>
+                  <th name="sys_updated_by">Updated by</th>
+                  <th>Assigned to</th>
+                  <th>Caller</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          `;
+        }
+
+      function setupNav() {
+        document.querySelectorAll('nav a[href]').forEach(a => {
+          a.addEventListener('click', (ev) => {
+            const href = a.getAttribute('href');
+            if (href && href.startsWith('?view=')) {
+              ev.preventDefault();
+              window.location.search = href;
+            }
+          });
+        });
+      }
+
+      const rowHoverMoveDetectDelayMs = 600;
+      let rowHoverMoveHandler;
+      let rowHoverMoveListenerAttachTimeout;
+
+      function hideRowHoverAlert() {
+        const existingAlert = document.getElementById('incident-row-hover-alert');
+        if (existingAlert) existingAlert.remove();
+        if (rowHoverMoveListenerAttachTimeout) {
+          clearTimeout(rowHoverMoveListenerAttachTimeout);
+          rowHoverMoveListenerAttachTimeout = null;
+        }
+        if (rowHoverMoveHandler) {
+          document.removeEventListener('mousemove', rowHoverMoveHandler, true);
+          rowHoverMoveHandler = null;
+        }
+      }
+
+      function showRowHoverAlert(message, pointerEvent) {
+        return;
+      }
+
+      function getLineHoverZone(clientX) {
+        const pointerPosition = clientX / window.innerWidth;
+        if (pointerPosition >= 0.9) return 'right-of-second-line';
+        if (pointerPosition >= 0.8) return 'between-lines';
+        return 'left';
+      }
+
+      function setupRowHoverHint() {
+        const table = document.querySelector('table[aria-label="incident list"]');
+        if (!table) return;
+        const incidentTypeHeader = table.querySelector('th[name="incident_type"]');
+        const incidentTypeColumnIndex = incidentTypeHeader ? incidentTypeHeader.cellIndex : -1;
+        const updatedByHeader = table.querySelector('th[name="sys_updated_by"]');
+        const updatedByColumnIndex = updatedByHeader ? updatedByHeader.cellIndex : -1;
+        const numberHeader = Array.from(table.querySelectorAll('thead th')).find(function (header) {
+          return header.textContent.trim() === 'Number';
+        });
+        const numberColumnIndex = numberHeader ? numberHeader.cellIndex : -1;
+
+        table.addEventListener('mouseover', function (event) {
+          const row = event.target.closest('tbody tr');
+          if (!row) return;
+
+          // Line-zone hints take priority over row and column hints.
+          if (getLineHoverZone(event.clientX) !== 'left') return;
+
+          const cell = event.target.closest('td');
+          const enteredIncidentTypeCell = cell && cell.cellIndex === incidentTypeColumnIndex &&
+            (!event.relatedTarget || !cell.contains(event.relatedTarget));
+
+          if (enteredIncidentTypeCell && cell.textContent.trim().toUpperCase() === 'NA') {
+            showRowHoverAlert("Please click the 'Classify Ticket' button to classify incident first.", event);
+            return;
+          }
+
+          const enteredUpdatedByCell = cell && cell.cellIndex === updatedByColumnIndex &&
+            (!event.relatedTarget || !cell.contains(event.relatedTarget));
+
+          if (enteredUpdatedByCell && window.getComputedStyle(cell).color === 'rgb(255, 0, 0)') {
+            showRowHoverAlert('This column is red because the incident was not updated by David.', event);
+            return;
+          }
+
+          const enteredNumberCell = cell && cell.cellIndex === numberColumnIndex &&
+            (!event.relatedTarget || !cell.contains(event.relatedTarget));
+          const numberLink = enteredNumberCell ? cell.querySelector('a.linked.formlink') : null;
+          const changedNumberColor = numberLink ? numberLink.style.color.trim().toLowerCase() : '';
+
+          if (changedNumberColor && changedNumberColor !== 'black' && changedNumberColor !== 'rgb(0, 0, 0)') {
+            showRowHoverAlert('This incident ID is highlighted because it was viewed today.', event);
+            return;
+          }
+
+          if (event.relatedTarget && row.contains(event.relatedTarget)) return;
+          showRowHoverAlert('Click anywhere in this row to open the record. After clicking, incident ID will change color for the day until someone else replies.', event);
+        });
+      }
+
+      function setupLineZoneHoverHints() {
+        let activeZone = '';
+
+        document.addEventListener('mousemove', function (event) {
+          const nextZone = getLineHoverZone(event.clientX);
+
+          if (nextZone === activeZone) return;
+          activeZone = nextZone;
+
+          if (activeZone === 'between-lines') {
+            showRowHoverAlert('Click anywhere between the two lines to open new incident list.', event);
+          } else if (activeZone === 'right-of-second-line') {
+            showRowHoverAlert('Click anywhere to the right of the second line to open the incident assigned to David.', event);
+          }
+        });
+      }
+
+      function boot() {
+        const mainContent = document.getElementById('main_content');
+        if (mainContent) {
+          const data = ticketData[viewType] || ticketData.new;
+          const sortedData = data.slice().sort((a, b) => {
+            const aNum = parseInt(String(a.num || '').replace(/\D/g, ''), 10) || 0;
+            const bNum = parseInt(String(b.num || '').replace(/\D/g, ''), 10) || 0;
+            return aNum - bNum;
+          });
+          mainContent.innerHTML = generateTable(sortedData);
+        }
+        setupNav();
+        setupUserSwitcher();
+        setupRowHoverHint();
+        setupLineZoneHoverHints();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
+  <script src="mockExtensionBootstrap.js"></script>
+</body>
+</html>
