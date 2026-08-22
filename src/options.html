@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Option page for Better Web</title>
+  <style type="text/css">
+    ul {
+      height: 100%;
+      width: 800vw;
+      overflow: auto;
+      border: 0px solid black;
+      border-radius: 2px;
+      display: inline-block;
+      padding: 2px;
+      margin: 1px;
+    }
+
+    li {
+      color: blue;
+      cursor: pointer;
+    }
+
+    td {
+      vertical-align: top; /* Align content to the top of the cell */
+      text-align: center;
+    }
+
+    td a {
+      padding: 0 10px; /* Adjust padding to fit your needs */
+      word-wrap: normal;
+      display: inline-block;
+    }
+
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+    }
+
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+    }
+
+    .tab button:hover {
+      background-color: #ddd;
+    }
+
+    .tab button.active {
+      background-color: #ccc;
+    }
+
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+
+    .editor {
+      overflow: auto;
+      display: none;
+      padding: 0%;
+    }
+
+    div.editor {
+      outline: 0px solid transparent;
+      height: 100%;
+    }
+
+    .active {
+      display: inline-block !important;
+    }
+
+    .popup {
+      width: 100%; /* 1200px; or width: 100%; depending on your layout */
+      margin: 0;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .button-delete {
+      vertical-align: top;
+    }
+
+    .textarea {
+      width: 70%;
+      box-sizing: border-box;
+      /* Ensures padding and border are included in the width */
+    }
+
+    .textarea-shortcut {
+      width: 20%;
+      padding: 1px;
+      box-sizing: border-box;
+      /* Ensures padding and border are included in the width */
+    }
+
+    .textarea-shortcut textarea {
+      width: 100%; /* Make the textarea use the full width of the cell */
+      box-sizing: border-box; /* Ensures padding and border are included in the width */
+    }
+
+    .textarea textarea {
+      width: 100%; /* Make the textarea use the full width of the cell */
+      box-sizing: border-box; /* Ensures padding and border are included in the width */
+    }
+
+    .table-btn {
+      width: 5%;
+      vertical-align: top;
+    }
+
+    .url-link-preview {
+      min-width: 52px;
+      text-align: left;
+      line-height: 1.1;
+    }
+
+    .url-link-preview a {
+      display: inline-block;
+      margin: 0 4px 2px 0;
+      padding: 0 4px;
+      font-size: 11px;
+      line-height: 1.15;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      text-decoration: none;
+    }
+
+    @keyframes betterWebSpin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <script type="module" src="./options.js"></script>
+</head>
+
+<body>
+  <div class="popup" id="popup"></div>
+</body>
+
+</html>

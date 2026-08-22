@@ -1,0 +1,37 @@
+{"urls":
+ {"0":["URLs","mail.google outlook mail.yahoo"],
+  "1":["myFirstName","David"],
+  "2":["ticketURL","https://bx.service-now.com/nav_to.do?uri=incident.do"],
+  "3":["detailPagePaths","mail"]},
+
+"keywords":
+ {},
+
+"controls":
+ {"0":["p","Save selection to profile"],
+  "1":["sp","Search prompts"]},
+
+"shortcuts":
+ {"0":["hny &NPOUNDhappyNew or any comments","Happy New Year."],
+  "1":["hfd &NPOUNDHappy Friday","Happy Friday.\nBye,\nmyFirstName"],
+  "2":["hbd &NPOUNDhappyBirth or any comments you want","Happy birthday1."]},
+
+"sentences":
+ {"0":[5,"Happy July 4th."],
+  "1":[2,"Yes, other people are also interested in the project."],
+  "2":[2,"We will host training for users to use the software as well."],
+  "4":[2,"Happy Friday. (note: 2 means this sentence is used twice.)"],
+  "20":[1,"Good point."],
+  "21":[1,"Does starfish scan standby folder?"],
+  "22":[1,"200 is good number."],
+  "23":[1,"Thanks agai"],
+  "25":[4,"Thanks for the information. "]},
+
+"hides":
+ {},
+
+"fills":
+ {},
+
+"bookmark":
+ {}}
