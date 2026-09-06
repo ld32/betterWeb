@@ -1,0 +1,61 @@
+/* Dark theme, applied by the browser itself.
+ *
+ * Registered as a content-script stylesheet from background.js whenever the
+ * "darkMode" Variables row is on, and unregistered when it is off. That is the
+ * only way to be genuinely flash-free: a stylesheet registered this way is
+ * applied at document_start, in every frame, before any script of ours runs --
+ * so there is no async storage read to lose the race against first paint, which
+ * is what the earlier JS injection could not avoid.
+ */
+:root { color-scheme: dark !important; }
+html, body { background-color: #1e1f22 !important; color: #e3e3e3 !important; }
+div:not([style*="background"]), section:not([style*="background"]),
+main:not([style*="background"]), header:not([style*="background"]),
+footer:not([style*="background"]), nav:not([style*="background"]),
+aside:not([style*="background"]), article:not([style*="background"]),
+form:not([style*="background"]), fieldset:not([style*="background"]),
+table:not([style*="background"]), thead:not([style*="background"]),
+tbody:not([style*="background"]), tr:not([style*="background"]),
+td:not([style*="background"]), th:not([style*="background"]),
+ul:not([style*="background"]), ol:not([style*="background"]),
+li:not([style*="background"]), p:not([style*="background"]),
+span:not([style*="background"]), label:not([style*="background"]),
+dl:not([style*="background"]), dd:not([style*="background"]),
+dt:not([style*="background"]) { background-color: transparent !important; }
+/* An element with an inline colour keeps it. That is how this extension marks
+   things on the page -- the "Updated by" cell goes red when it is your id, and
+   several list highlights do the same -- and !important here would beat the
+   inline style and wash all of them out to the same grey.
+   The selector also matches "background-color", which is harmless: such an
+   element is picked up by the inline-background rule further down instead. */
+body:not([style*="color"]), td:not([style*="color"]), th:not([style*="color"]),
+li:not([style*="color"]), p:not([style*="color"]), span:not([style*="color"]),
+label:not([style*="color"]), dt:not([style*="color"]), dd:not([style*="color"]),
+h1:not([style*="color"]), h2:not([style*="color"]), h3:not([style*="color"]),
+h4:not([style*="color"]), h5:not([style*="color"]), h6:not([style*="color"]) { color: #e3e3e3 !important; }
+a:not([style*="color"]), a:visited:not([style*="color"]) { color: #7cb7ff !important; }
+input, select, textarea, button {
+  background-color: #2b2d31 !important;
+  color: #e3e3e3 !important;
+  border-color: #4a4d55 !important;
+}
+input::placeholder, textarea::placeholder { color: #9aa0a6 !important; }
+hr, td, th, table { border-color: #3a3d44 !important; }
+/* A page that paints its own inline background keeps it; flip the text so it
+   stays legible. Form controls are excluded: they are always dark above, and
+   forcing dark text onto them is what made fields unreadable before. */
+[style*="background"]:not(input):not(textarea):not(select):not(button):not([data-bw-ui]),
+[style*="background"] *:not(input):not(textarea):not(select):not(button):not([data-bw-ui] *) { color: #111 !important; }
+/* data-bw-ui marks anything this extension draws on the page: the status panel,
+   the alert popups, the hint window. They pick text colours to suit their own
+   backgrounds, so the rule above must leave them alone -- it is what turned the
+   black-on-black alerts and the mode row unreadable. Marking them by attribute
+   rather than by id means a new overlay only has to set the attribute. */
+/* Everything inside a marked overlay takes the colour that overlay chose for
+   itself, rather than the theme's body colour. The attribute is repeated to
+   raise specificity to (0,2,0): the generic p/span/li colour rule above scores
+   (0,1,1) and would otherwise win for nested markup, leaving an alert built
+   with <p><strong> in body grey instead of its own white. */
+[data-bw-ui][data-bw-ui] * { color: inherit !important; }
+#betterweb-status, #betterweb-status * { background-color: transparent !important; }
+#betterweb-status { background-color: var(--bw-status-bg, #fff) !important; }

@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Better web dev",
+  "version": "1.8.4",
+  "description": "Improve web exploration experience by Auto Text Expansion with Hints and more.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.service-now.com/*",
+        "*://teams.microsoft.com/*",
+        "*://*.slack.com/*",
+        "*://chatgpt.com/*",
+        "*://*.claude.ai/*",
+        "*://*.openai.com/*",
+        "*://github.com/*",
+        "*://mail.google.com/*",
+        "*://outlook.live.com/*",
+        "*://mail.yahoo.com/*",
+        "*://*.github.io/*"
+      ],
+      "js": [
+        "jquery-3.7.1.slim.min.js",
+        "content.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "optional_host_permissions": [
+    "*://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://api.github.com"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "64": "icons/icon-64.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "Better web dev",
+    "default_popup": "options.html"
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "tabs",
+    "storage",
+    "downloads",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "offscreen",
+    "scripting"
+  ]
+}
